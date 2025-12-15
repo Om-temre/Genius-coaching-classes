@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Saraswati Coaching - Test Series Demo</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- Dashboard View -->
+  <div id="dashboard-view" class="view active">
+    <header class="header">
+      <div class="container">
+        <h1><i class="fas fa-graduation-cap"></i> Saraswati Coaching</h1>
+        <p class="subtitle">Test Series Demo</p>
+      </div>
+    </header>
+
+    <main class="container main-content">
+      <div class="dashboard-grid">
+        <!-- Available Tests Card -->
+        <div class="card dashboard-card">
+          <div class="card-icon">
+            <i class="fas fa-clipboard-list"></i>
+          </div>
+          <h2>Available Tests</h2>
+          <p class="card-description">Start practicing with our mock tests</p>
+          <div class="test-list">
+            <div class="test-item">
+              <div class="test-info">
+                <h3>Class 10 Mathematics Mock Test 1</h3>
+                <div class="test-meta">
+                  <span><i class="fas fa-clock"></i> 20 minutes</span>
+                  <span><i class="fas fa-star"></i> 40 marks</span>
+                  <span><i class="fas fa-question-circle"></i> 10 questions</span>
+                </div>
+              </div>
+              <button class="btn btn-primary" onclick="showInstructions()">Start Test</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- My Results Card -->
+        <div class="card dashboard-card">
+          <div class="card-icon">
+            <i class="fas fa-chart-bar"></i>
+          </div>
+          <h2>My Results</h2>
+          <p class="card-description">View your previous test results</p>
+          <div class="results-preview" id="results-preview">
+            <p class="empty-state">No tests taken yet. Start your first test!</p>
+          </div>
+        </div>
+
+        <!-- Purchase Packages Card -->
+        <div class="card dashboard-card">
+          <div class="card-icon">
+            <i class="fas fa-shopping-cart"></i>
+          </div>
+          <h2>Purchase Packages</h2>
+          <p class="card-description">Unlock more tests with our packages</p>
+          <button class="btn btn-secondary" onclick="showPackages()">View Packages</button>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Instructions Modal -->
+  <div id="instructions-modal" class="modal">
+    <div class="modal-content">
+      <h2>Test Instructions</h2>
+      <div class="instructions-box">
+        <ul class="instructions-list">
+          <li><i class="fas fa-check-circle"></i> Read all questions carefully</li>
+          <li><i class="fas fa-check-circle"></i> Each question carries 4 marks</li>
+          <li><i class="fas fa-check-circle"></i> There is no negative marking</li>
+          <li><i class="fas fa-check-circle"></i> You can navigate between questions using the question palette</li>
+          <li><i class="fas fa-check-circle"></i> Mark questions for review if unsure</li>
+          <li><i class="fas fa-check-circle"></i> Click Submit to finish the test</li>
+        </ul>
+        <div class="test-summary">
+          <div class="summary-item">
+            <strong>Duration:</strong> 20 minutes
+          </div>
+          <div class="summary-item">
+            <strong>Total Questions:</strong> 10
+          </div>
+          <div class="summary-item">
+            <strong>Total Marks:</strong> 40
+          </div>
+        </div>
+      </div>
+      <div class="modal-actions">
+        <button class="btn btn-secondary" onclick="closeInstructions()">Cancel</button>
+        <button class="btn btn-primary" onclick="startTest()">Start Test</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Test Interface View -->
+  <div id="test-view" class="view">
+    <div class="test-header">
+      <div class="test-title">Class 10 Mathematics Mock Test 1</div>
+      <div class="test-timer" id="timer">
+        <i class="fas fa-clock"></i>
+        <span id="timer-display">20:00</span>
+      </div>
+      <button class="btn btn-danger" onclick="showSubmitConfirmation()">Submit Test</button>
+    </div>
+
+    <div class="test-container">
+      <!-- Question Palette Sidebar -->
+      <div class="question-palette">
+        <h3>Question Palette</h3>
+        <div class="palette-legend">
+          <div class="legend-item">
+            <div class="palette-btn answered"></div>
+            <span>Answered</span>
+          </div>
+          <div class="legend-item">
+            <div class="palette-btn marked"></div>
+            <span>Marked</span>
+          </div>
+          <div class="legend-item">
+            <div class="palette-btn not-answered"></div>
+            <span>Not Answered</span>
+          </div>
+          <div class="legend-item">
+            <div class="palette-btn not-visited"></div>
+            <span>Not Visited</span>
+          </div>
+        </div>
+        <div id="palette-grid" class="palette-grid"></div>
+      </div>
+
+      <!-- Question Area -->
+      <div class="question-area">
+        <div id="question-container" class="question-container"></div>
+        
+        <div class="navigation-buttons">
+          <button class="btn btn-secondary" onclick="clearResponse()">Clear Response</button>
+          <button class="btn btn-warning" onclick="markForReview()">Mark for Review</button>
+          <button class="btn btn-primary" onclick="saveAndNext()">Save &amp; Next</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Submit Confirmation Modal -->
+  <div id="submit-modal" class="modal">
+    <div class="modal-content">
+      <h2>Submit Test?</h2>
+      <div class="submit-summary" id="submit-summary"></div>
+      <p class="warning-text">Are you sure you want to submit? You cannot change answers after submission.</p>
+      <div class="modal-actions">
+        <button class="btn btn-secondary" onclick="closeSubmitModal()">Cancel</button>
+        <button class="btn btn-danger" onclick="submitTest()">Submit</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Result View -->
+  <div id="result-view" class="view">
+    <header class="header">
+      <div class="container">
+        <h1><i class="fas fa-trophy"></i> Test Result</h1>
+      </div>
+    </header>
+
+    <main class="container main-content">
+      <div class="result-container">
+        <!-- Score Card -->
+        <div class="card result-card">
+          <h2>Your Score</h2>
+          <div class="score-display" id="score-display"></div>
+          <div class="score-percentage" id="score-percentage"></div>
+        </div>
+
+        <!-- Performance Chart -->
+        <div class="card result-card">
+          <h2>Performance Overview</h2>
+          <div class="chart-container">
+            <canvas id="performance-chart"></canvas>
+          </div>
+        </div>
+
+        <!-- Topic-wise Analysis -->
+        <div class="card result-card full-width">
+          <h2>Topic-wise Analysis</h2>
+          <div class="analysis-table" id="topic-analysis"></div>
+        </div>
+
+        <!-- Time Analysis -->
+        <div class="card result-card full-width">
+          <h2>Time Spent Analysis</h2>
+          <div class="time-analysis" id="time-analysis"></div>
+        </div>
+
+        <!-- Actions -->
+        <div class="result-actions">
+          <button class="btn btn-secondary" onclick="showDashboard()">Back to Dashboard</button>
+          <button class="btn btn-primary" onclick="reviewSolutions()">Review Solutions</button>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Solutions View -->
+  <div id="solutions-view" class="view">
+    <header class="header">
+      <div class="container">
+        <h1><i class="fas fa-book"></i> Solutions</h1>
+      </div>
+    </header>
+
+    <main class="container main-content">
+      <div class="solutions-container" id="solutions-container"></div>
+      <div class="result-actions">
+        <button class="btn btn-primary" onclick="showResults()">Back to Results</button>
+      </div>
+    </main>
+  </div>
+
+  <!-- Packages View -->
+  <div id="packages-view" class="view">
+    <header class="header">
+      <div class="container">
+        <h1><i class="fas fa-box-open"></i> Test Packages</h1>
+      </div>
+    </header>
+
+    <main class="container main-content">
+      <div class="packages-grid" id="packages-grid"></div>
+      <div class="result-actions">
+        <button class="btn btn-secondary" onclick="showDashboard()">Back to Dashboard</button>
+      </div>
+    </main>
+  </div>
+
+  <!-- Payment Success Modal -->
+  <div id="payment-modal" class="modal">
+    <div class="modal-content">
+      <div class="success-icon">
+        <i class="fas fa-check-circle"></i>
+      </div>
+      <h2>Payment Successful!</h2>
+      <p>Your package has been activated successfully.</p>
+      <button class="btn btn-primary" onclick="closePaymentModal()">Continue</button>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

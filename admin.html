@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Panel | Saraswati Coaching</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = { 
+      theme: { 
+        extend: { 
+          colors: { 'emerald': '#047857', 'emerald-light': '#10b981', 'gray-light': '#f1f5f9' }, 
+          fontFamily: { 'sans': ['Poppins', 'sans-serif'] } 
+        } 
+      } 
+    }
+  </script>
+</head>
+<body class="bg-gray-light min-h-screen">
+
+  <!-- Navbar -->
+  <nav class="bg-emerald text-white p-4 shadow-lg sticky top-0 z-50">
+    <div class="container mx-auto flex justify-between items-center">
+      <h1 class="text-xl font-bold">Admin Panel</h1>
+      <div class="flex gap-2">
+        <button onclick="showTab('users')" class="px-4 py-2 rounded bg-emerald-light hover:bg-white hover:text-emerald transition">Users</button>
+        <button onclick="showTab('content')" class="px-4 py-2 rounded bg-emerald-light hover:bg-white hover:text-emerald transition">Content</button>
+        <button onclick="showTab('logs')" class="px-4 py-2 rounded bg-emerald-light hover:bg-white hover:text-emerald transition">Login Logs</button>
+        <button onclick="logout()" class="bg-red-600 px-4 py-2 rounded hover:bg-red-700 transition">Logout</button>
+      </div>
+    </div>
+  </nav>
+
+  <div class="container mx-auto p-6">
+
+    <!-- USER MANAGEMENT -->
+    <div id="users-tab" class="bg-white rounded-xl shadow-lg p-6 mb-6">
+      <div class="flex justify-between items-center mb-6">
+        <h2 class="text-2xl font-bold text-emerald">User Management</h2>
+        <button onclick="showCreateUser()" class="bg-emerald text-white px-4 py-2 rounded hover:bg-emerald-light text-sm">
+          + Create User
+        </button>
+      </div>
+
+      <input type="text" id="search-user" placeholder="Search by name or phone..." class="w-full p-3 border rounded-lg mb-4">
+
+      <div class="overflow-x-auto">
+        <table class="w-full text-left border-collapse">
+          <thead>
+            <tr class="bg-emerald-light text-white">
+              <th class="p-3 rounded-tl-lg">Name</th>
+              <th class="p-3">Phone</th>
+              <th class="p-3">Role</th>
+              <th class="p-3 rounded-tr-lg">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="users-table"></tbody>
+        </table>
+      </div>
+      <p id="no-users" class="text-center text-gray-500 py-8 hidden">No users found.</p>
+    </div>
+
+    <!-- CONTENT MANAGEMENT -->
+    <div id="content-tab" class="grid md:grid-cols-2 gap-6 hidden">
+      <!-- Prices -->
+      <div class="bg-white p-6 rounded-xl shadow">
+        <h2 class="text-xl font-bold text-emerald mb-4">Course Prices</h2>
+        <div id="prices-container" class="space-y-3"></div>
+        <button onclick="savePrices()" class="mt-4 w-full bg-emerald text-white py-2 rounded hover:bg-emerald-light">Save Prices</button>
+      </div>
+
+      <!-- Upload Video -->
+      <div class="bg-white p-6 rounded-xl shadow">
+        <h2 class="text-xl font-bold text-emerald mb-4">Upload Video</h2>
+        <input type="text" id="video-title" placeholder="Title" class="w-full p-2 border mb-2 rounded">
+        <input type="text" id="video-url" placeholder="YouTube URL" class="w-full p-2 border mb-2 rounded">
+        <select id="video-class" class="w-full p-2 border mb-2 rounded">
+          <option>9th</option><option>10th</option><option>11th</option><option>12th</option>
+        </select>
+        <button onclick="addVideo()" class="w-full bg-emerald text-white py-2 rounded hover:bg-emerald-light">Add Video</button>
+      </div>
+
+      <!-- Upload File -->
+      <div class="bg-white p-6 rounded-xl shadow">
+        <h2 class="text-xl font-bold text-emerald mb-4">Upload Study Material</h2>
+        <input type="text" id="file-title" placeholder="File Name" class="w-full p-2 border mb-2 rounded">
+        <input type="url" id="file-url" placeholder="Google Drive / URL" class="w-full p-2 border mb-2 rounded">
+        <select id="file-type" class="w-full p-2 border mb-2 rounded">
+          <option>Notes</option><option>Assignment</option><option>Test Paper</option><option>Solution</option>
+        </select>
+        <button onclick="addFile()" class="w-full bg-emerald text-white py-2 rounded hover:bg-emerald-light">Upload</button>
+      </div>
+    </div>
+
+    <!-- LOGIN ACTIVITY LOG -->
+    <div id="logs-tab" class="bg-white rounded-xl shadow-lg p-6 mb-6 hidden">
+      <div class="flex justify-between items-center mb-6">
+        <h2 class="text-2xl font-bold text-emerald">Login Activity Log</h2>
+        <div class="flex gap-2">
+          <input type="text" id="search-log" placeholder="Search by phone..." class="px-3 py-2 border rounded text-sm">
+          <button onclick="exportLogs()" class="bg-emerald text-white px-3 py-2 rounded text-sm hover:bg-emerald-light">Export CSV</button>
+          <button onclick="clearLogs()" class="bg-red-600 text-white px-3 py-2 rounded text-sm hover:bg-red-700">Clear All</button>
+        </div>
+      </div>
+
+      <div class="overflow-x-auto">
+        <table class="w-full text-left border-collapse">
+          <thead>
+            <tr class="bg-emerald-light text-white">
+              <th class="p-3 rounded-tl-lg">Phone</th>
+              <th class="p-3">Name</th>
+              <th class="p-3">Role</th>
+              <th class="p-3">Time</th>
+            </tr>
+          </thead>
+          <tbody id="logs-table"></tbody>
+        </table>
+      </div>
+      <p id="no-logs" class="text-center text-gray-500 py-8 hidden">No login activity.</p>
+    </div>
+
+    <!-- CREATE USER MODAL -->
+    <div id="create-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center z-50 p-4">
+      <div class="bg-white rounded-xl p-6 max-w-md w-full">
+        <h3 class="text-xl font-bold text-emerald mb-4">Create New User</h3>
+        <input type="text" id="new-name" placeholder="Full Name" class="w-full p-2 border rounded mb-3">
+        <input type="tel" id="new-phone" placeholder="+91 9876543210" class="w-full p-2 border rounded mb-3">
+        <input type="password" id="new-pass" placeholder="Password" class="w-full p-2 border rounded mb-3">
+        <select id="new-role" class="w-full p-2 border rounded mb-4">
+          <option value="student">Student</option>
+          <option value="admin">Admin</option>
+        </select>
+        <div class="flex gap-2">
+          <button onclick="createUser()" class="flex-1 bg-emerald text-white py-2 rounded hover:bg-emerald-light">Create</button>
+          <button onclick="closeModal()" class="flex-1 bg-gray-300 py-2 rounded hover:bg-gray-400">Cancel</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Alert -->
+    <div id="admin-alert" class="hidden fixed bottom-4 right-4 bg-emerald text-white p-4 rounded shadow-lg text-sm"></div>
+  </div>
+
+  <script>
+    // Check Admin
+    const currentUser = JSON.parse(localStorage.getItem('saraswati_user'));
+    if (!currentUser || currentUser.role !== 'admin') {
+      alert('Access Denied'); window.location.href = 'login.html';
+    }
+
+    // Data
+    let users = JSON.parse(localStorage.getItem('saraswati_users')) || [];
+    const prices = JSON.parse(localStorage.getItem('course_prices')) || { '9th': 999, '10th': 999, '11th': 1499, '12th': 1499 };
+    const videos = JSON.parse(localStorage.getItem('admin_videos')) || [];
+    const files = JSON.parse(localStorage.getItem('admin_files')) || [];
+    let loginLogs = JSON.parse(localStorage.getItem('login_logs')) || [];
+
+    // Tab System
+    function showTab(tab) {
+      document.getElementById('users-tab').classList.toggle('hidden', tab !== 'users');
+      document.getElementById('content-tab').classList.toggle('hidden', tab !== 'content');
+      document.getElementById('logs-tab').classList.toggle('hidden', tab !== 'logs');
+      if (tab === 'users') loadUsers();
+      if (tab === 'content') loadPrices();
+      if (tab === 'logs') loadLogs();
+    }
+
+    // USER MANAGEMENT
+    function loadUsers() {
+      const tbody = document.getElementById('users-table');
+      const search = document.getElementById('search-user').value.toLowerCase();
+      tbody.innerHTML = '';
+
+      const filtered = users.filter(u => 
+        u.name?.toLowerCase().includes(search) || 
+        u.phone?.toLowerCase().includes(search)
+      );
+
+      if (filtered.length === 0) {
+        document.getElementById('no-users').classList.remove('hidden');
+        return;
+      }
+      document.getElementById('no-users').classList.add('hidden');
+
+      filtered.forEach((user, i) => {
+        const row = document.createElement('tr');
+        row.className = i % 2 === 0 ? 'bg-gray-50' : '';
+        row.innerHTML = `
+          <td class="p-3">${user.name || '-'}</td>
+          <td class="p-3 font-mono text-sm">${user.phone}</td>
+          <td class="p-3"><span class="px-2 py-1 rounded text-xs ${user.role === 'admin' ? 'bg-red-100 text-red-700' : 'bg-emerald-light text-emerald'}">${user.role}</span></td>
+          <td class="p-3 flex gap-2">
+            <button onclick="editUser('${user.phone}')" class="text-blue-600 hover:underline text-sm">Edit</button>
+            <button onclick="deleteUser('${user.phone}')" class="text-red-600 hover:underline text-sm">Delete</button>
+          </td>
+        `;
+        tbody.appendChild(row);
+      });
+    }
+
+    function showCreateUser() {
+      document.getElementById('create-modal').classList.remove('hidden');
+    }
+
+    function closeModal() {
+      document.getElementById('create-modal').classList.add('hidden');
+    }
+
+    function createUser() {
+      const name = document.getElementById('new-name').value.trim();
+      const phone = document.getElementById('new-phone').value.trim();
+      const password = document.getElementById('new-pass').value;
+      const role = document.getElementById('new-role').value;
+
+      if (!name || !phone || !password) {
+        showAlert('Fill all fields');
+        return;
+      }
+
+      if (users.find(u => u.phone === phone)) {
+        showAlert('Phone already registered');
+        return;
+      }
+
+      users.push({ name, phone, password, role });
+      localStorage.setItem('saraswati_users', JSON.stringify(users));
+      closeModal();
+      loadUsers();
+      showAlert('User Created!');
+    }
+
+    function editUser(phone) {
+      const user = users.find(u => u.phone === phone);
+      const newName = prompt('Edit Name:', user.name);
+      const newPass = prompt('New Password (leave blank to keep):', '');
+      if (newName !== null) user.name = newName;
+      if (newPass) user.password = newPass;
+      localStorage.setItem('saraswati_users', JSON.stringify(users));
+      loadUsers();
+      showAlert('User Updated!');
+    }
+
+    function deleteUser(phone) {
+      if (confirm(`Delete user "${phone}"?`)) {
+        users = users.filter(u => u.phone !== phone);
+        localStorage.setItem('saraswati_users', JSON.stringify(users));
+        loadUsers();
+        showAlert('User Deleted!');
+      }
+    }
+
+    // LOGIN LOGS
+    function loadLogs() {
+      const tbody = document.getElementById('logs-table');
+      const search = document.getElementById('search-log').value.toLowerCase();
+      tbody.innerHTML = '';
+
+      const filtered = loginLogs.filter(log => log.phone.includes(search));
+
+      if (filtered.length === 0) {
+        document.getElementById('no-logs').classList.remove('hidden');
+        return;
+      }
+      document.getElementById('no-logs').classList.add('hidden');
+
+      filtered.forEach((log, i) => {
+        const row = document.createElement('tr');
+        row.className = i % 2 === 0 ? 'bg-gray-50' : '';
+        row.innerHTML = `
+          <td class="p-3 font-mono text-sm">${log.phone}</td>
+          <td class="p-3">${log.name || '-'}</td>
+          <td class="p-3"><span class="px-2 py-1 rounded text-xs ${log.role === 'admin' ? 'bg-red-100 text-red-700' : 'bg-emerald-light text-emerald'}">${log.role}</span></td>
+          <td class="p-3 text-xs">${new Date(log.timestamp).toLocaleString()}</td>
+        `;
+        tbody.appendChild(row);
+      });
+    }
+
+    function exportLogs() {
+      let csv = 'Phone,Name,Role,Timestamp\n';
+      loginLogs.forEach(l => csv += `${l.phone},${l.name || ''},${l.role},${new Date(l.timestamp).toLocaleString()}\n`);
+      downloadCSV(csv, 'login_logs.csv');
+    }
+
+    function clearLogs() {
+      if (confirm('Clear all login logs?')) {
+        loginLogs = [];
+        localStorage.setItem('login_logs', JSON.stringify(loginLogs));
+        loadLogs();
+        showAlert('Logs Cleared!');
+      }
+    }
+
+    function downloadCSV(csv, filename) {
+      const blob = new Blob([csv], { type: 'text/csv' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = filename;
+      a.click();
+    }
+
+    // Search
+    document.getElementById('search-user').oninput = loadUsers;
+    document.getElementById('search-log').oninput = loadLogs;
+
+    // CONTENT (Prices, Videos, Files)
+    function loadPrices() {
+      const container = document.getElementById('prices-container');
+      container.innerHTML = '';
+      Object.keys(prices).forEach(cls => {
+        container.innerHTML += `
+          <div class="flex gap-2 items-center">
+            <span class="flex-1 font-medium">Class ${cls.toUpperCase()}:</span>
+            <input type="number" id="price-${cls}" value="${prices[cls]}" class="w-24 p-2 border rounded">
+          </div>`;
+      });
+    }
+
+    function savePrices() {
+      Object.keys(prices).forEach(cls => {
+        prices[cls] = parseInt(document.getElementById(`price-${cls}`).value);
+      });
+      localStorage.setItem('course_prices', JSON.stringify(prices));
+      showAlert('Prices Saved!');
+    }
+
+    function addVideo() {
+      const title = document.getElementById('video-title').value.trim();
+      const url = document.getElementById('video-url').value.trim();
+      const cls = document.getElementById('video-class').value;
+      if (title && url) {
+        videos.push({ title, url, class: cls });
+        localStorage.setItem('admin_videos', JSON.stringify(videos));
+        showAlert('Video Added!');
+        document.getElementById('video-title').value = '';
+        document.getElementById('video-url').value = '';
+      }
+    }
+
+    function addFile() {
+      const title = document.getElementById('file-title').value.trim();
+      const url = document.getElementById('file-url').value.trim();
+      const type = document.getElementById('file-type').value;
+      if (title && url) {
+        files.push({ title, url, type });
+        localStorage.setItem('admin_files', JSON.stringify(files));
+        showAlert(`${type} Uploaded!`);
+        document.getElementById('file-title').value = '';
+        document.getElementById('file-url').value = '';
+      }
+    }
+
+    function showAlert(msg) {
+      const alert = document.getElementById('admin-alert');
+      alert.textContent = msg;
+      alert.classList.remove('hidden');
+      setTimeout(() => alert.classList.add('hidden'), 3000);
+    }
+
+    function logout() {
+      localStorage.removeItem('saraswati_user');
+      window.location.href = 'login.html';
+    }
+
+    // Init
+    showTab('users');
+  </script>
+</body>
+</html>

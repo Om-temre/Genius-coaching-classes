@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>My Courses | Genius Coaching</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: { 'emerald': '#047857', 'emerald-light': '#10b981', 'gray-light': '#f1f5f9' },
+          fontFamily: { 'sans': ['Poppins', 'sans-serif'] }
+        }
+      }
+    }
+  </script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+</head>
+<body class="bg-gray-light min-h-screen">
+
+  <!-- Navbar -->
+  <nav class="bg-emerald text-white p-4 shadow-lg sticky top-0 z-50">
+    <div class="container mx-auto flex justify-between items-center">
+      <a href="index.html" class="text-xl font-bold">GENIUS COACHING</a>
+      <div class="flex items-center gap-4">
+        <span id="user-greeting" class="font-medium"></span>
+        <button onclick="logout()" class="bg-red-600 px-4 py-2 rounded hover:bg-red-700 transition text-sm">
+          <i class="fas fa-sign-out-alt mr-1"></i> Logout
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <div class="container mx-auto p-6 max-w-6xl">
+
+    <!-- Welcome -->
+    <div class="bg-white rounded-xl shadow-lg p-6 mb-6 text-center">
+      <h1 class="text-3xl font-bold text-emerald mb-2">Welcome back, <span id="user-name"></span>!</h1>
+      <p class="text-gray-600">Access your purchased courses and materials below.</p>
+    </div>
+
+    <!-- Tabs -->
+    <div class="flex flex-wrap gap-2 mb-6 border-b border-gray-300">
+      <button onclick="showTab('videos')" class="tab-btn px-6 py-3 font-medium text-emerald border-b-2 border-emerald transition">Videos</button>
+      <button onclick="showTab('notes')" class="tab-btn px-6 py-3 font-medium text-gray-600 hover:text-emerald transition">Notes</button>
+      <button onclick="showTab('assignments')" class="tab-btn px-6 py-3 font-medium text-gray-600 hover:text-emerald transition">Assignments</button>
+      <button onclick="showTab('tests')" class="tab-btn px-6 py-3 font-medium text-gray-600 hover:text-emerald transition">Test Papers</button>
+    </div>
+
+    <!-- Content -->
+    <div id="videos-tab" class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <!-- Videos loaded here -->
+    </div>
+    <div id="notes-tab" class="space-y-4 hidden">
+      <!-- Notes loaded here -->
+    </div>
+    <div id="assignments-tab" class="space-y-4 hidden">
+      <!-- Assignments loaded here -->
+    </div>
+    <div id="tests-tab" class="space-y-4 hidden">
+      <!-- Tests loaded here -->
+    </div>
+
+    <p id="no-content" class="text-center text-gray-500 py-12 hidden">
+      No content available for this section.
+    </p>
+  </div>
+
+  <script>
+    // Check login
+    const user = JSON.parse(localStorage.getItem('saraswati_user'));
+    if (!user || user.role !== 'student') {
+      alert('Please login as a student to access this page.');
+      window.location.href = 'login.html';
+    }
+
+    document.getElementById('user-name').textContent = user.name || user.phone;
+    document.getElementById('user-greeting').textContent = `Hi, ${user.name || user.phone}`;
+
+    // Load content
+    const videos = JSON.parse(localStorage.getItem('admin_videos')) || [];
+    const files = JSON.parse(localStorage.getItem('admin_files')) || [];
+
+    // Determine purchased classes
+    const purchased = [];
+    ['9th', '10th', '11th', '12th'].forEach(cls => {
+      if (localStorage.getItem(`purchased_${cls}`) === 'true') purchased.push(cls);
+    });
+
+    // Filter content by purchased class
+    const myVideos = videos.filter(v => purchased.includes(v.class));
+    const myFiles = files.filter(f => purchased.includes(f.class || 'all')); // fallback
+
+    function showTab(tab) {
+      document.querySelectorAll('.tab-btn').forEach(b => {
+        b.classList.remove('text-emerald', 'border-emerald');
+        b.classList.add('text-gray-600');
+      });
+      event.target.classList.add('text-emerald', 'border-emerald');
+      event.target.classList.remove('text-gray-600');
+
+      document.getElementById('videos-tab').classList.add('hidden');
+      document.getElementById('notes-tab').classList.add('hidden');
+      document.getElementById('assignments-tab').classList.add('hidden');
+      document.getElementById('tests-tab').classList.add('hidden');
+      document.getElementById('no-content').classList.add('hidden');
+
+      const target = document.getElementById(tab + '-tab');
+      if (tab === 'videos' && myVideos.length > 0) {
+        renderVideos();
+        target.classList.remove('hidden');
+      } else if (tab === 'notes' && myFiles.filter(f => f.type === 'Notes').length > 0) {
+        renderFiles('Notes', 'notes-tab');
+        target.classList.remove('hidden');
+      } else if (tab === 'assignments' && myFiles.filter(f => f.type === 'Assignment').length > 0) {
+        renderFiles('Assignment', 'assignments-tab');
+        target.classList.remove('hidden');
+      } else if (tab === 'tests' && myFiles.filter(f => f.type === 'Test Paper').length > 0) {
+        renderFiles('Test Paper', 'tests-tab');
+        target.classList.remove('hidden');
+      } else {
+        document.getElementById('no-content').classList.remove('hidden');
+      }
+    }
+
+    function renderVideos() {
+      const container = document.getElementById('videos-tab');
+      container.innerHTML = '';
+      myVideos.forEach(v => {
+        const div = document.createElement('div');
+        div.className = 'bg-white rounded-xl shadow-md overflow-hidden';
+        div.innerHTML = `
+          <div class="aspect-w-16 aspect-h-9 bg-gray-200">
+            <iframe class="w-full h-48" src="${v.url.replace('watch?v=', 'embed/')}" frameborder="0" allowfullscreen></iframe>
+          </div>
+          <div class="p-4">
+            <h3 class="font-semibold text-emerald">${v.title}</h3>
+            <p class="text-sm text-gray-600">Class ${v.class}</p>
+          </div>
+        `;
+        container.appendChild(div);
+      });
+    }
+
+    function renderFiles(type, tabId) {
+      const container = document.getElementById(tabId);
+      container.innerHTML = '';
+      const items = myFiles.filter(f => f.type === type);
+      items.forEach(f => {
+        const div = document.createElement('div');
+        div.className = 'bg-white p-4 rounded-xl shadow flex justify-between items-center';
+        div.innerHTML = `
+          <div>
+            <h4 class="font-medium text-emerald">${f.title}</h4>
+            <p class="text-xs text-gray-500">Class ${f.class || 'All'}</p>
+          </div>
+          <a href="${f.url}" target="_blank" class="text-emerald-light hover:text-emerald">
+            <i class="fas fa-external-link-alt"></i>
+          </a>
+        `;
+        container.appendChild(div);
+      });
+    }
+
+    function logout() {
+      localStorage.removeItem('saraswati_user');
+      window.location.href = 'login.html';
+    }
+
+    // Init
+    showTab('videos');
+  </script>
+</body>
+</html>

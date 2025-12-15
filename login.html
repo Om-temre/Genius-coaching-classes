@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Login | genius Coaching</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com"></script>">
+  <script>
+    tailwind.config = { theme: { extend: { colors: { 'emerald': '#047857', 'emerald-light': '#10b981', 'gray-light': '#f1f5f9' }, fontFamily: { 'sans': ['Poppins', 'sans-serif'] } } } }
+  </script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+</head>
+<body class="bg-gray-light min-h-screen flex items-center justify-center p-4">
+
+  <div class="max-w-md w-full bg-white rounded-3xl shadow-2xl p-8">
+    <div class="text-center mb-8">
+      <h1 class="text-3xl font-bold text-emerald">Genius Coaching</h1>
+      <p class="text-gray-600 mt-2" id="form-title">Login to Continue</p>
+    </div>
+
+    <div id="alert" class="hidden mb-6 p-4 rounded-xl text-sm font-medium text-center"></div>
+
+    <!-- Login Form -->
+    <form id="login-form" class="space-y-6">
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-2">Phone</label>
+        <input type="tel" id="login-phone" required placeholder="+91 8959161289" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-emerald">
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-2">Password</label>
+        <input type="password" id="login-password" required placeholder="••••••••" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-emerald">
+      </div>
+      <button type="submit" class="w-full bg-emerald text-white py-3 rounded-xl hover:bg-emerald-light font-semibold">Login</button>
+    </form>
+
+    <!-- Register Form (Hidden) -->
+    <form id="register-form" class="space-y-6 hidden">
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-2">Full Name</label>
+        <input type="text" id="reg-name" required placeholder="John Doe" class="w-full px-4 py-3 border border-gray-300 rounded-xl">
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-2">Phone</label>
+        <input type="tel" id="reg-phone" required placeholder="+91 8959161289" class="w-full px-4 py-3 border border-gray-300 rounded-xl">
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-2">Password</label>
+        <input type="password" id="reg-password" required placeholder="Create password" class="w-full px-4 py-3 border border-gray-300 rounded-xl">
+      </div>
+      <button type="submit" class="w-full bg-emerald text-white py-3 rounded-xl hover:bg-emerald-light font-semibold">Create Account</button>
+    </form>
+
+    <div class="mt-6 text-center text-sm">
+      <span id="toggle-text">Don't have an account? </span>
+      <a href="#" id="toggle-link" class="text-emerald font-semibold hover:text-emerald-light">Register Now</a>
+    </div>
+
+    <div class="text-center mt-4">
+      <a href="index.html" class="text-emerald hover:text-emerald-light text-sm">Back to Home</a>
+    </div>
+  </div>
+
+  <script>
+    const users = JSON.parse(localStorage.getItem('saraswati_users')) || [];
+    const admin = { phone: 'admin123', password: 'admin@123', role: 'admin' };
+    if (!users.find(u => u.phone === admin.phone)) users.push(admin);
+    localStorage.setItem('saraswati_users', JSON.stringify(users));
+
+    const loginForm = document.getElementById('login-form');
+    const registerForm = document.getElementById('register-form');
+    const toggleLink = document.getElementById('toggle-link');
+    const toggleText = document.getElementById('toggle-text');
+    const formTitle = document.getElementById('form-title');
+
+    toggleLink.onclick = (e) => {
+      e.preventDefault();
+      const isLogin = loginForm.classList.contains('hidden');
+      loginForm.classList.toggle('hidden');
+      registerForm.classList.toggle('hidden');
+      formTitle.textContent = isLogin ? 'Create Account' : 'Login to Continue';
+      toggleText.textContent = isLogin ? 'Already have an account? ' : "Don't have an account? ";
+      toggleLink.textContent = isLogin ? 'Login Now' : 'Register Now';
+    };
+
+    function showAlert(msg, type = 'error') {
+      const alert = document.getElementById('alert');
+      alert.textContent = msg;
+      alert.className = `mb-6 p-4 rounded-xl text-sm font-medium text-center block ${type === 'success' ? 'bg-emerald-light text-white' : 'bg-red-100 text-red-700'}`;
+      setTimeout(() => alert.classList.add('hidden'), 4000);
+    }
+
+    loginForm.onsubmit = (e) => {
+      e.preventDefault();
+      const phone = document.getElementById('login-phone').value.trim();
+      const password = document.getElementById('login-password').value;
+      const user = users.find(u => u.phone === phone && u.password === password);
+      if (user) {
+        localStorage.setItem('saraswati_user', JSON.stringify(user));
+        showAlert('Login Successful!', 'success');
+        setTimeout(() => {
+          window.location.href = user.role === 'admin' ? 'admin.html' : 'index.html';
+        }, 1000);
+      } else {
+        showAlert('Invalid credentials');
+      }
+    };
+
+    registerForm.onsubmit = (e) => {
+      e.preventDefault();
+      const name = document.getElementById('reg-name').value.trim();
+      const phone = document.getElementById('reg-phone').value.trim();
+      const password = document.getElementById('reg-password').value;
+      if (users.find(u => u.phone === phone)) {
+        showAlert('Phone already registered');
+        return;
+      }
+      users.push({ name, phone, password, role: 'student' });
+      localStorage.setItem('saraswati_users', JSON.stringify(users));
+      showAlert('Account created! Please login.', 'success');
+      toggleLink.click();
+    };
+  </script>
+  <script>
+    if (user) {
+  // LOG LOGIN ACTIVITY
+  const logEntry = {
+    phone: user.phone,
+    name: user.name,
+    role: user.role,
+    timestamp: Date.now()
+  };
+  let logs = JSON.parse(localStorage.getItem('login_logs')) || [];
+  logs.push(logEntry);
+  localStorage.setItem('login_logs', JSON.stringify(logs));
+
+  localStorage.setItem('saraswati_user', JSON.stringify(user));
+  showAlert('Login Successful!', 'success');
+  setTimeout(() => {
+    window.location.href = user.role === 'admin' ? 'admin.html' : 'index.html';
+  }, 1000)
+}
+  </script>
+</body>
+</html>
