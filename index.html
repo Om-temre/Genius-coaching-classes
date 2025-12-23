@@ -457,17 +457,25 @@ const content = document.getElementById('faculty-content');
 content.innerHTML = `
 <h2 class="text-2xl sm:text-3xl font-bold text-emerald mb-6 text-center">Meet Our Expert Faculty</h2>
 <p class="text-sm sm:text-base text-gray-600 mb-8 text-center">B.Ed & D.EI.Ed alumni dedicated to your success.</p>
-<div class="grid grid-cols-1 sm:grid-cols-2 gap-6 sm:gap-8">
 <div class="text-center animate-slide-up">
-<div class="w-40 h-40 bg-gradient-to-br from-emerald to-emerald-light rounded-full mx-auto mb-4 shadow-lg flex items-center justify-center">
-<i class="fas fa-user-tie text-5xl text-white opacity-40"></i>
+  <div class="w-40 h-40 rounded-full mx-auto mb-4 shadow-lg overflow-hidden">
+    <img 
+      src="https://raw.githubusercontent.com/Om-temre/Genius-coaching-classes/main/image/profile.png"
+      alt="Mr. Ranjit Kumar"
+      class="w-full h-full object-cover"
+    >
+  </div>
+
+  <h3 class="text-lg sm:text-xl font-bold text-emerald mb-2">Mr. Ranjit Kumar</h3>
+  <p class="text-emerald-light font-semibold mb-2 text-sm">Physics Expert</p>
+
+  <ul class="text-xs sm:text-sm text-gray-600 space-y-1">
+    <li>✓ 10+ Years Experience</li>
+    <li>✓ 100+ Students Mentored</li>
+    <li>✓ Board Exam Topper Coach</li>
+  </ul>
 </div>
-<h3 class="text-lg sm:text-xl font-bold text-emerald mb-2">Mr. Ranjit Kumar</h3>
-<p class="text-emerald-light font-semibold mb-2 text-sm">Physics Expert</p>
-<ul class="text-xs sm:text-sm text-gray-600 space-y-1">
-<li>✓ 10+ Years Experience</li>
-<li>✓ 100+ Students Mentored</li>
-<li>✓ Board Exam Topper Coach</li>
+
 </ul>
 </div>
 <div class="text-center animate-slide-up" style="animation-delay: 0.1s">
