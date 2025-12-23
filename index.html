@@ -17,23 +17,37 @@ colors: {
 'emerald': '#047857',
 'emerald-light': '#10b981',
 'gray-light': '#f1f5f9',
-      },
+},
 fontFamily: {
 'sans': ['Poppins', 'sans-serif'],
-      },
+},
 animation: {
 'fade-in': 'fadeIn 0.6s ease-out forwards',
 'slide-up': 'slideUp 0.5s ease-out forwards',
+'slide-down': 'slideDown 0.6s ease-out forwards',
 'modal-in': 'modalIn 0.3s ease-out forwards',
-      },
-    },
-  },
+'float': 'float 3s ease-in-out infinite',
+'pulse-slow': 'pulseSlow 3s ease-in-out infinite',
+'bounce-slow': 'bounceSlow 2s ease-in-out infinite',
+'glow': 'glow 2s ease-in-out infinite',
+'shimmer': 'shimmer 2s ease-in-out infinite',
+'rotate-slow': 'rotateSlow 20s linear infinite',
+},
+},
+},
 }
 </script>
 <style>
 @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 @keyframes slideUp { from { transform: translateY(30px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+@keyframes slideDown { from { transform: translateY(-30px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
 @keyframes modalIn { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
+@keyframes float { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-20px); } }
+@keyframes pulseSlow { 0%, 100% { opacity: 1; } 50% { opacity: 0.8; } }
+@keyframes bounceSlow { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-15px); } }
+@keyframes glow { 0%, 100% { box-shadow: 0 0 20px rgba(16, 185, 129, 0.3); } 50% { box-shadow: 0 0 40px rgba(16, 185, 129, 0.6); } }
+@keyframes shimmer { 0%, 100% { background-position: -1000px 0; } 100% { background-position: 1000px 0; } }
+@keyframes rotateSlow { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
 </style>
 <!-- Font Awesome -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
@@ -42,116 +56,122 @@ animation: {
 </head>
 <body class="bg-gray-light min-h-screen">
 <!-- Navbar -->
-<nav class="bg-emerald text-white shadow-lg sticky top-0 z-50 p-4">
+<nav class="bg-emerald text-white shadow-lg sticky top-0 z-50 p-3 sm:p-4">
 <div class="container mx-auto flex justify-between items-center">
-<a href="#" class="text-2xl font-bold">Genius COACHING</a>
-<button id="navbarToggler" class="md:hidden">
+<a href="#" class="text-xl sm:text-2xl font-bold animate-pulse">Genius</a>
+<button id="navbarToggler" class="lg:hidden p-2 hover:bg-emerald-light rounded transition">
 <i class="fas fa-bars text-xl"></i>
 </button>
-<div id="navbarNav" class="hidden md:flex md:items-center space-x-6">
-<ul class="flex space-x-6 font-medium">
-<li><a href="#home" class="hover:text-emerald-light transition">Home</a></li>
-<li><a href="#highlights" class="hover:text-emerald-light transition">Highlights</a></li>
-<li><a href="#courses" class="hover:text-emerald-light transition">Courses</a></li>
-<li><a href="#video-lectures" class="hover:text-emerald-light transition">Videos</a></li>
-<li><a href="#contact" class="hover:text-emerald-light transition">Contact</a></li>
+<div id="navbarNav" class="hidden lg:flex lg:items-center space-x-4 lg:space-x-6">
+<ul class="flex space-x-4 lg:space-x-6 font-medium text-sm lg:text-base">
+<li><a href="#home" class="hover:text-emerald-light transition hover:scale-110">Home</a></li>
+<li><a href="#highlights" class="hover:text-emerald-light transition hover:scale-110">Highlights</a></li>
+<li><a href="#courses" class="hover:text-emerald-light transition hover:scale-110">Courses</a></li>
+<li><a href="#video-lectures" class="hover:text-emerald-light transition hover:scale-110">Videos</a></li>
+<li><a href="#contact" class="hover:text-emerald-light transition hover:scale-110">Contact</a></li>
 </ul>
-<div class="flex space-x-3">
+<div class="flex space-x-2 lg:space-x-3">
 <a href="#" onclick="document.getElementById('admission-modal').classList.remove('hidden')"
-class="bg-white text-emerald px-5 py-2 rounded hover:bg-emerald-light hover:text-white transition">
-          Admission
+class="bg-white text-emerald px-3 lg:px-5 py-1 lg:py-2 rounded text-sm lg:text-base hover:bg-emerald-light hover:text-white transition hover:scale-105 transform duration-300">
+Admission
 </a>
-<a href="login.html" class="bg-emerald-light text-white px-5 py-2 rounded hover:bg-emerald transition">Login</a>
-</div>
+<a href="login.html" class="bg-emerald-light text-white px-3 lg:px-5 py-1 lg:py-2 rounded text-sm lg:text-base hover:bg-emerald transition hover:scale-105 transform duration-300">Login</a>
 </div>
 </div>
 </nav>
 
 <!-- Admission Modal -->
 <div id="admission-modal" class="fixed inset-0 bg-black bg-opacity-70 hidden flex items-center justify-center z-50 p-4">
-<div class="bg-white rounded-2xl shadow-2xl max-w-md w-full p-8 text-center animate-modal-in">
-<div class="mb-6">
-<img src="https://images.unsplash.com/photo-1524178232363-1fb2b075b655?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
-alt="Saraswati Coaching Classroom"
-class="w-full h-48 object-cover rounded-xl shadow-md">
+<div class="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6 sm:p-8 text-center animate-modal-in">
+<button onclick="document.getElementById('admission-modal').classList.add('hidden')"
+class="absolute top-4 right-4 text-gray-500 hover:text-red-600 text-2xl">×</button>
+<div class="mb-6 animate-float">
+<div class="w-full h-40 sm:h-48 bg-gradient-to-br from-emerald to-emerald-light rounded-xl shadow-md flex items-center justify-center">
+<i class="fas fa-graduation-cap text-6xl text-white opacity-80"></i>
 </div>
-<h2 class="text-3xl font-bold text-emerald mb-4">Admissions Open!</h2>
-<p class="text-gray-700 mb-6 leading-relaxed">
-      Join <strong>Saraswati Coaching</strong> for expert guidance, proven results, and a bright future.
+</div>
+<h2 class="text-2xl sm:text-3xl font-bold text-emerald mb-4 animate-slide-down">Admissions Open!</h2>
+<p class="text-sm sm:text-base text-gray-700 mb-6 leading-relaxed">
+Join <strong>Genius Coaching</strong> for expert guidance, proven results, and a bright future.
 <br><span class="text-red-600 font-semibold">Limited seats available!</span>
 </p>
 <div class="space-y-3">
-<a href="https://wa.me/9516562501?text=Hi,%20I%20want%20to%20enroll%20in%20Saraswati%20Coaching"
+<a href="https://wa.me/918959161289?text=Hi,%20I%20want%20to%20enroll%20in%20Genius%20Coaching"
 target="_blank"
-class="block bg-emerald text-white py-3 rounded-lg hover:bg-emerald-light transition font-medium flex items-center justify-center gap-2">
-<i class="fab fa-whatsapp"></i> Enroll via WhatsApp
+class="block bg-emerald text-white py-3 rounded-lg hover:bg-emerald-light transition font-medium text-sm sm:text-base flex items-center justify-center gap-2 hover:shadow-lg transform hover:scale-105 duration-300">
+<i class="fab fa-whatsapp animate-bounce"></i> Enroll via WhatsApp
 </a>
 <button onclick="document.getElementById('admission-modal').classList.add('hidden')"
-class="w-full bg-gray-200 text-gray-800 py-3 rounded-lg hover:bg-gray-300 transition font-medium">
-        Close
+class="w-full bg-gray-200 text-gray-800 py-3 rounded-lg hover:bg-gray-300 transition font-medium text-sm sm:text-base">
+Close
 </button>
 </div>
 </div>
 </div>
 
-<!-- Course Details Popup Modal -->
+<!-- Course Details Modal -->
 <div id="course-detail-modal" class="fixed inset-0 bg-black bg-opacity-70 hidden flex items-center justify-center z-50 p-4">
-<div class="bg-white rounded-3xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto p-8 relative animate-modal-in">
+<div class="bg-white rounded-3xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto p-6 sm:p-8 relative animate-modal-in">
 <button onclick="document.getElementById('course-detail-modal').classList.add('hidden')"
-class="absolute top-4 right-4 text-gray-500 hover:text-red-600 text-2xl">
-      ×
-</button>
-<div id="modal-content">
-<!-- Content injected via JS -->
-</div>
+class="absolute top-4 right-4 text-gray-500 hover:text-red-600 text-2xl">×</button>
+<div id="modal-content"></div>
 </div>
 </div>
 
-<!-- Hero -->
-<section id="home" class="h-[500px] bg-cover bg-center flex items-center justify-center text-white relative" style="background-image: url('https://images.unsplash.com/photo-1524178232363-1fb2b075b655?ixlib=rb-4.0.3&auto=format&fit=crop&w=1350&q=80');">
-<div class="absolute inset-0 bg-black opacity-60"></div>
-<div class="relative text-center z-10 px-6 animate-fade-in">
-<h1 class="text-5xl md:text-6xl font-bold">Welcome to Genius</h1>
-<p class="text-xl md:text-2xl mt-4">Empowering Students Since 2010</p>
-<div class="mt-8 space-x-4">
-<a href="#video-lectures" class="bg-white text-emerald px-6 py-3 rounded-lg hover:bg-emerald-light hover:text-white transition">
-        Free Videos
+<!-- Hero Section with Animated Gradients -->
+<section id="home" class="min-h-[400px] sm:h-[500px] flex items-center justify-center text-white relative overflow-hidden">
+<div class="absolute inset-0 bg-gradient-to-r from-emerald via-emerald-light to-emerald animate-rotate-slow"></div>
+<div class="absolute inset-0 bg-gradient-to-b from-black/30 via-black/50 to-black/70"></div>
+<div class="absolute top-10 left-10 w-32 h-32 bg-emerald-light rounded-full mix-blend-screen animate-float opacity-20"></div>
+<div class="absolute bottom-20 right-10 w-40 h-40 bg-emerald rounded-full mix-blend-screen animate-bounce-slow opacity-20"></div>
+<div class="absolute top-1/3 right-1/4 w-24 h-24 bg-emerald-light rounded-full mix-blend-screen animate-pulse-slow opacity-30"></div>
+
+<div class="relative text-center z-10 px-4 sm:px-6">
+<div class="animate-slide-down">
+<h1 class="text-4xl sm:text-5xl lg:text-6xl font-bold drop-shadow-lg mb-2">Welcome to Genius</h1>
+<div class="h-1 w-24 bg-emerald-light mx-auto rounded-full animate-pulse"></div>
+</div>
+<p class="text-lg sm:text-xl lg:text-2xl mt-6 drop-shadow-md animate-slide-up">Empowering Students Since 2010</p>
+<div class="mt-10 space-x-2 sm:space-x-4 animate-bounce-slow flex justify-center">
+<a href="#video-lectures" class="inline-block bg-white text-emerald px-6 sm:px-8 py-3 sm:py-4 rounded-lg text-sm sm:text-base font-semibold hover:bg-emerald-light hover:text-white hover:shadow-2xl transition duration-300 transform hover:scale-110 hover:-translate-y-1">
+<i class="fas fa-play mr-2"></i> Free Videos
 </a>
 </div>
 </div>
 </section>
 
 <!-- Highlights Section -->
-<section id="highlights" class="py-16 bg-gray-light">
-<div class="container mx-auto px-6">
-<h2 class="text-4xl font-bold text-center text-emerald mb-12 animate-slide-up">Our Highlights</h2>
-<div class="grid md:grid-cols-3 gap-8">
-<!-- Expert Faculty Card - Clickable -->
-<div class="bg-white p-8 rounded-xl shadow-lg text-center hover:shadow-2xl transition animate-slide-up cursor-pointer"
-style="animation-delay: 0ms" onclick="showFacultyModal()">
-<div class="w-16 h-16 bg-emerald-light text-white rounded-full flex items-center justify-center mx-auto mb-4 text-2xl">
+<section id="highlights" class="py-12 sm:py-16 bg-gray-light">
+<div class="container mx-auto px-4 sm:px-6">
+<h2 class="text-2xl sm:text-3xl lg:text-4xl font-bold text-center text-emerald mb-2 animate-slide-up">Our Highlights</h2>
+<div class="h-1 w-20 bg-emerald-light mx-auto rounded-full mb-8 sm:mb-12"></div>
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
+<!-- Expert Faculty Card -->
+<div class="bg-white p-6 sm:p-8 rounded-xl shadow-lg text-center hover:shadow-2xl transition animate-slide-up cursor-pointer hover:scale-105 duration-300 transform hover:-translate-y-2"
+onclick="showFacultyModal()" style="animation-delay: 0s">
+<div class="w-16 h-16 bg-emerald-light text-white rounded-full flex items-center justify-center mx-auto mb-4 text-3xl animate-glow">
 <i class="fas fa-chalkboard-teacher"></i>
 </div>
-<h3 class="text-xl font-bold text-emerald mb-2">Expert Faculty</h3>
-<p class="text-gray-600">B.Ed & D.EI.Ed alumni with 10+ years of experience.</p>
+<h3 class="text-lg sm:text-xl font-bold text-emerald mb-2">Expert Faculty</h3>
+<p class="text-sm sm:text-base text-gray-600">B.Ed & D.EI.Ed alumni with 10+ years of experience.</p>
 </div>
-<!-- Proven Results Card - Clickable -->
-<div class="bg-white p-8 rounded-xl shadow-lg text-center hover:shadow-2xl transition animate-slide-up cursor-pointer"
-style="animation-delay: 150ms" onclick="showResultsModal()">
-<div class="w-16 h-16 bg-emerald-light text-white rounded-full flex items-center justify-center mx-auto mb-4 text-2xl">
+<!-- Proven Results Card -->
+<div class="bg-white p-6 sm:p-8 rounded-xl shadow-lg text-center hover:shadow-2xl transition animate-slide-up cursor-pointer hover:scale-105 duration-300 transform hover:-translate-y-2"
+onclick="showResultsModal()" style="animation-delay: 0.1s">
+<div class="w-16 h-16 bg-emerald-light text-white rounded-full flex items-center justify-center mx-auto mb-4 text-3xl animate-glow">
 <i class="fas fa-trophy"></i>
 </div>
-<h3 class="text-xl font-bold text-emerald mb-2">Proven Results</h3>
-<p class="text-gray-600">10+ rankers in board exams every year.</p>
+<h3 class="text-lg sm:text-xl font-bold text-emerald mb-2">Proven Results</h3>
+<p class="text-sm sm:text-base text-gray-600">10+ rankers in board exams every year.</p>
 </div>
-<!-- Smart Classes Card - Clickable -->
-<div class="bg-white p-8 rounded-xl shadow-lg text-center hover:shadow-2xl transition animate-slide-up cursor-pointer"
-style="animation-delay: 300ms" onclick="showSmartModal()">
-<div class="w-16 h-16 bg-emerald-light text-white rounded-full flex items-center justify-center mx-auto mb-4 text-2xl">
+<!-- Smart Classes Card -->
+<div class="bg-white p-6 sm:p-8 rounded-xl shadow-lg text-center hover:shadow-2xl transition animate-slide-up cursor-pointer hover:scale-105 duration-300 transform hover:-translate-y-2"
+onclick="showSmartModal()" style="animation-delay: 0.2s">
+<div class="w-16 h-16 bg-emerald-light text-white rounded-full flex items-center justify-center mx-auto mb-4 text-3xl animate-glow">
 <i class="fas fa-laptop"></i>
 </div>
-<h3 class="text-xl font-bold text-emerald mb-2"> Best Smart Classes</h3>
-<p class="text-gray-600">Digital boards, best rooms, and live doubt solving alumni.</p>
+<h3 class="text-lg sm:text-xl font-bold text-emerald mb-2">Smart Classes</h3>
+<p class="text-sm sm:text-base text-gray-600">Digital boards, best rooms, and live doubt solving.</p>
 </div>
 </div>
 </div>
@@ -159,136 +179,108 @@ style="animation-delay: 300ms" onclick="showSmartModal()">
 
 <!-- Faculty Modal -->
 <div id="faculty-modal" class="fixed inset-0 bg-black bg-opacity-70 hidden flex items-center justify-center z-50 p-4">
-<div class="bg-white rounded-3xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto p-8 relative animate-modal-in">
+<div class="bg-white rounded-3xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto p-6 sm:p-8 relative animate-modal-in">
 <button onclick="document.getElementById('faculty-modal').classList.add('hidden')"
-class="absolute top-4 right-4 text-gray-500 hover:text-red-600 text-2xl">
-      ×
-</button>
-<div id="faculty-content">
-<!-- Content injected via JS -->
-</div>
+class="absolute top-4 right-4 text-gray-500 hover:text-red-600 text-2xl">×</button>
+<div id="faculty-content"></div>
 </div>
 </div>
 
 <!-- Results Modal -->
 <div id="results-modal" class="fixed inset-0 bg-black bg-opacity-70 hidden flex items-center justify-center z-50 p-4">
-<div class="bg-white rounded-3xl shadow-2xl max-w-3xl w-full max-h-[90vh] overflow-y-auto p-8 relative animate-modal-in">
+<div class="bg-white rounded-3xl shadow-2xl max-w-3xl w-full max-h-[90vh] overflow-y-auto p-6 sm:p-8 relative animate-modal-in">
 <button onclick="document.getElementById('results-modal').classList.add('hidden')"
-class="absolute top-4 right-4 text-gray-500 hover:text-red-600 text-2xl">
-      ×
-</button>
-<div id="results-content">
-<!-- Content injected via JS -->
-</div>
+class="absolute top-4 right-4 text-gray-500 hover:text-red-600 text-2xl">×</button>
+<div id="results-content"></div>
 </div>
 </div>
 
 <!-- Smart Classes Modal -->
 <div id="smart-modal" class="fixed inset-0 bg-black bg-opacity-70 hidden flex items-center justify-center z-50 p-4">
-<div class="bg-white rounded-3xl shadow-2xl max-w-3xl w-full max-h-[90vh] overflow-y-auto p-8 relative animate-modal-in">
+<div class="bg-white rounded-3xl shadow-2xl max-w-3xl w-full max-h-[90vh] overflow-y-auto p-6 sm:p-8 relative animate-modal-in">
 <button onclick="document.getElementById('smart-modal').classList.add('hidden')"
-class="absolute top-4 right-4 text-gray-500 hover:text-red-600 text-2xl">
-      ×
-</button>
-<div id="smart-content">
-<!-- Content injected via JS -->
-</div>
+class="absolute top-4 right-4 text-gray-500 hover:text-red-600 text-2xl">×</button>
+<div id="smart-content"></div>
 </div>
 </div>
 
 <!-- Notes Modal -->
 <div id="notes-modal" class="fixed inset-0 bg-black bg-opacity-70 hidden flex items-center justify-center z-50 p-4">
-<div class="bg-white rounded-3xl shadow-2xl max-w-3xl w-full max-h-[90vh] overflow-y-auto p-8 relative animate-modal-in">
+<div class="bg-white rounded-3xl shadow-2xl max-w-3xl w-full max-h-[90vh] overflow-y-auto p-6 sm:p-8 relative animate-modal-in">
 <button onclick="document.getElementById('notes-modal').classList.add('hidden')"
-class="absolute top-4 right-4 text-gray-500 hover:text-red-600 text-2xl">
-      ×
-</button>
-<div id="notes-content">
-<!-- Content injected by JS -->
-</div>
+class="absolute top-4 right-4 text-gray-500 hover:text-red-600 text-2xl">×</button>
+<div id="notes-content"></div>
 </div>
 </div>
 
-<!-- Test-Series Modal -->
+<!-- Test Series Modal -->
 <div id="testseries-modal" class="fixed inset-0 bg-black bg-opacity-70 hidden flex items-center justify-center z-50 p-4">
-<div class="bg-white rounded-3xl shadow-2xl max-w-3xl w-full max-h-[90vh] overflow-y-auto p-8 relative animate-modal-in">
+<div class="bg-white rounded-3xl shadow-2xl max-w-3xl w-full max-h-[90vh] overflow-y-auto p-6 sm:p-8 relative animate-modal-in">
 <button onclick="document.getElementById('testseries-modal').classList.add('hidden')"
-class="absolute top-4 right-4 text-gray-500 hover:text-red-600 text-2xl">
-      ×
-</button>
-<div id="testseries-content">
-<!-- Content injected via JS -->
-</div>
+class="absolute top-4 right-4 text-gray-500 hover:text-red-600 text-2xl">×</button>
+<div id="testseries-content"></div>
 </div>
 </div>
 
-<!-- Assignments Modal (NEW) -->
+<!-- Assignments Modal -->
 <div id="assignments-modal" class="fixed inset-0 bg-black bg-opacity-70 hidden flex items-center justify-center z-50 p-4">
-<div class="bg-white rounded-3xl shadow-2xl max-w-3xl w-full max-h-[90vh] overflow-y-auto p-8 relative animate-modal-in">
+<div class="bg-white rounded-3xl shadow-2xl max-w-3xl w-full max-h-[90vh] overflow-y-auto p-6 sm:p-8 relative animate-modal-in">
 <button onclick="document.getElementById('assignments-modal').classList.add('hidden')"
-class="absolute top-4 right-4 text-gray-500 hover:text-red-600 text-2xl">
-      ×
-</button>
-<div id="assignments-content">
-<!-- Content injected via JS -->
-</div>
+class="absolute top-4 right-4 text-gray-500 hover:text-red-600 text-2xl">×</button>
+<div id="assignments-content"></div>
 </div>
 </div>
 
-<!-- Our Courses & Study Materials Section -->
-<section id="courses" class="py-16 bg-white">
-<div class="container mx-auto px-6">
-<div class="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto">
+<!-- Courses & Study Materials Section -->
+<section id="courses" class="py-12 sm:py-16 bg-white">
+<div class="container mx-auto px-4 sm:px-6">
+<h2 class="text-2xl sm:text-3xl lg:text-4xl font-bold text-center text-emerald mb-2 animate-slide-up">Our Programs</h2>
+<div class="h-1 w-20 bg-emerald-light mx-auto rounded-full mb-8 sm:mb-12"></div>
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-6 sm:gap-8">
 <!-- Courses Box -->
-<div class="bg-white rounded-3xl shadow-xl p-10 hover:shadow-2xl transition-all duration-300 animate-slide-up border border-gray-100">
+<div class="bg-white rounded-3xl shadow-xl p-8 hover:shadow-2xl transition-all duration-300 animate-slide-up border border-gray-100 hover:scale-105 transform">
 <div class="flex flex-col items-center text-center">
-<div class="w-16 h-16 bg-emerald rounded-2xl flex items-center justify-center mb-6 shadow-lg">
+<div class="w-16 h-16 bg-emerald rounded-2xl flex items-center justify-center mb-6 shadow-lg animate-glow">
 <svg class="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
 </svg>
 </div>
-<h3 class="text-2xl font-bold text-emerald mb-3">Courses</h3>
-<p class="text-gray-600 mb-8 leading-relaxed">
-            Explore best exam courses for Biology,Physics,Chemistry,Maths,bord exams and competitive exams.
+<h3 class="text-xl sm:text-2xl font-bold text-emerald mb-3">Courses</h3>
+<p class="text-sm sm:text-base text-gray-600 mb-8 leading-relaxed">
+Explore best exam courses for Biology, Physics, Chemistry, Maths and competitive exams.
 </p>
-<div class="grid grid-cols-2 gap-4 w-full">
-<button onclick="showCourseDetails('9th')" class="bg-emerald text-white py-3 rounded-xl hover:bg-emerald-light transition font-medium text-sm">Class 9th</button>
-<button onclick="showCourseDetails('10th')" class="bg-emerald text-white py-3 rounded-xl hover:bg-emerald-light transition font-medium text-sm">Class 10th</button>
-<button onclick="showCourseDetails('11th')" class="bg-emerald text-white py-3 rounded-xl hover:bg-emerald-light transition font-medium text-sm">11th PCMB</button>
-<button onclick="showCourseDetails('12th')" class="bg-emerald text-white py-3 rounded-xl hover:bg-emerald-light transition font-medium text-sm">12th PCMB</button>
+<div class="grid grid-cols-2 gap-3 w-full">
+<button onclick="showCourseDetails('9th')" class="bg-emerald text-white py-2 sm:py-3 rounded-xl hover:bg-emerald-light transition font-medium text-xs sm:text-sm hover:shadow-lg transform hover:scale-105 duration-300">Class 9th</button>
+<button onclick="showCourseDetails('10th')" class="bg-emerald text-white py-2 sm:py-3 rounded-xl hover:bg-emerald-light transition font-medium text-xs sm:text-sm hover:shadow-lg transform hover:scale-105 duration-300">Class 10th</button>
+<button onclick="showCourseDetails('11th')" class="bg-emerald text-white py-2 sm:py-3 rounded-xl hover:bg-emerald-light transition font-medium text-xs sm:text-sm hover:shadow-lg transform hover:scale-105 duration-300">11th PCMB</button>
+<button onclick="showCourseDetails('12th')" class="bg-emerald text-white py-2 sm:py-3 rounded-xl hover:bg-emerald-light transition font-medium text-xs sm:text-sm hover:shadow-lg transform hover:scale-105 duration-300">12th PCMB</button>
 </div>
 </div>
 </div>
 
-<!-- Study Materials Box (UPDATED: Assignments is now a BUTTON) -->
-<div class="bg-white rounded-3xl shadow-xl p-10 hover:shadow-2xl transition-all duration-300 animate-slide-up border border-gray-100">
+<!-- Study Materials Box -->
+<div class="bg-white rounded-3xl shadow-xl p-8 hover:shadow-2xl transition-all duration-300 animate-slide-up border border-gray-100 hover:scale-105 transform">
 <div class="flex flex-col items-center text-center">
-<div class="w-16 h-16 bg-emerald rounded-2xl flex items-center justify-center mb-6 shadow-lg">
+<div class="w-16 h-16 bg-emerald rounded-2xl flex items-center justify-center mb-6 shadow-lg animate-glow">
 <svg class="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
 </svg>
 </div>
-<h3 class="text-2xl font-bold text-emerald mb-3">Study Materials</h3>
-<p class="text-gray-600 mb-8 leading-relaxed">
-            Access useful notes, guides, and assignments
+<h3 class="text-xl sm:text-2xl font-bold text-emerald mb-3">Study Materials</h3>
+<p class="text-sm sm:text-base text-gray-600 mb-8 leading-relaxed">
+Access useful notes, guides, and assignments.
 </p>
-<div class="grid grid-cols-2 gap-4 w-full">
-<!-- NOTES BUTTON -->
-<button onclick="showNotesModal()" class="bg-emerald text-white py-3 rounded-xl hover:bg-emerald-light transition font-medium text-sm flex items-center justify-center gap-2">
+<div class="grid grid-cols-2 gap-3 w-full">
+<button onclick="showNotesModal()" class="bg-emerald text-white py-2 sm:py-3 rounded-xl hover:bg-emerald-light transition font-medium text-xs sm:text-sm flex items-center justify-center gap-1 hover:shadow-lg transform hover:scale-105 duration-300">
 <i class="fas fa-file-alt"></i> Notes
 </button>
-
-<!-- ASSIGNMENTS BUTTON (NEW) -->
-<button onclick="showAssignmentsModal()" class="bg-emerald text-white py-3 rounded-xl hover:bg-emerald-light transition font-medium text-sm flex items-center justify-center gap-2">
-<i class="fas fa-tasks"></i>  Assignments 
+<button onclick="showAssignmentsModal()" class="bg-emerald text-white py-2 sm:py-3 rounded-xl hover:bg-emerald-light transition font-medium text-xs sm:text-sm flex items-center justify-center gap-1 hover:shadow-lg transform hover:scale-105 duration-300">
+<i class="fas fa-tasks"></i> Assignments
 </button>
-
-<!-- TEST PAPERS BUTTON -->
-<button onclick="showTestSeriesModal()" class="bg-emerald text-white py-3 rounded-xl hover:bg-emerald-light transition font-medium text-sm flex items-center justify-center gap-2">
-<i class="fas fa-clipboard-list"></i>  unsolved
+<button onclick="showTestSeriesModal()" class="bg-emerald text-white py-2 sm:py-3 rounded-xl hover:bg-emerald-light transition font-medium text-xs sm:text-sm flex items-center justify-center gap-1 hover:shadow-lg transform hover:scale-105 duration-300">
+<i class="fas fa-clipboard-list"></i> Tests
 </button>
-
-<a href="trst.html" class="bg-emerald text-white py-3 rounded-xl hover:bg-emerald-light transition font-medium text-sm flex items-center justify-center gap-2">
+<a href="trst.html" class="bg-emerald text-white py-2 sm:py-3 rounded-xl hover:bg-emerald-light transition font-medium text-xs sm:text-sm flex items-center justify-center gap-1 hover:shadow-lg transform hover:scale-105 duration-300">
 <i class="fas fa-check-circle"></i> Solutions
 </a>
 </div>
@@ -299,70 +291,78 @@ class="absolute top-4 right-4 text-gray-500 hover:text-red-600 text-2xl">
 </section>
 
 <!-- Video Lectures Section -->
-<section id="video-lectures" class="py-16 bg-white">
-<div class="container mx-auto px-6">
-<h2 class="text-4xl font-bold text-center text-emerald mb-12 animate-slide-up">Free Video Lectures</h2>
-<div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-<div class="bg-gray-100 rounded-xl overflow-hidden shadow-lg animate-slide-up" style="animation-delay: 0ms">
-<iframe class="w-full h-48" src="https://youtu.be/6-wRDlJlD7g?si=Wuhh1aqjS2Mh36Ns" frameborder="0" allowfullscreen></iframe>
+<section id="video-lectures" class="py-12 sm:py-16 bg-gray-light">
+<div class="container mx-auto px-4 sm:px-6">
+<h2 class="text-2xl sm:text-3xl lg:text-4xl font-bold text-center text-emerald mb-2 animate-slide-up">Free Video Lectures</h2>
+<div class="h-1 w-20 bg-emerald-light mx-auto rounded-full mb-8 sm:mb-12"></div>
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
+<div class="bg-white rounded-xl overflow-hidden shadow-lg animate-slide-up hover:shadow-2xl transition transform hover:scale-105 duration-300">
+<div class="h-40 sm:h-48 bg-gradient-to-br from-emerald to-emerald-light flex items-center justify-center">
+<i class="fas fa-video text-4xl text-white opacity-30"></i>
+</div>
 <div class="p-4">
-<h3 class="font-semibold text-emerald">Maths: Quadratic Equations</h3>
-<p class="text-sm text-gray-600">Class 10th | 45 mins</p>
+<h3 class="font-semibold text-sm sm:text-base text-emerald">Maths: Quadratic Equations</h3>
+<p class="text-xs sm:text-sm text-gray-600">Class 10th | 45 mins</p>
 </div>
 </div>
-<div class="bg-gray-100 rounded-xl overflow-hidden shadow-lg animate-slide-up" style="animation-delay: 150ms">
-<iframe class="w-full h-48" src="https://www.youtube.com/embed/9bZkp7q19f0" frameborder="0" allowfullscreen></iframe>
+<div class="bg-white rounded-xl overflow-hidden shadow-lg animate-slide-up hover:shadow-2xl transition transform hover:scale-105 duration-300" style="animation-delay: 0.1s">
+<div class="h-40 sm:h-48 bg-gradient-to-br from-emerald-light to-emerald flex items-center justify-center">
+<i class="fas fa-video text-4xl text-white opacity-30"></i>
+</div>
 <div class="p-4">
-<h3 class="font-semibold text-emerald">Physics: Laws of Motion</h3>
-<p class="text-sm text-gray-600">Class 11th | 52 mins</p>
+<h3 class="font-semibold text-sm sm:text-base text-emerald">Physics: Laws of Motion</h3>
+<p class="text-xs sm:text-sm text-gray-600">Class 11th | 52 mins</p>
 </div>
 </div>
-<div class="bg-gray-100 rounded-xl overflow-hidden shadow-lg animate-slide-up" style="animation-delay: 300ms">
-<iframe class="w-full h-48" src="https://www.youtube.com/embed/oHg5SJYRHA0" frameborder="0" allowfullscreen></iframe>
+<div class="bg-white rounded-xl overflow-hidden shadow-lg animate-slide-up hover:shadow-2xl transition transform hover:scale-105 duration-300" style="animation-delay: 0.2s">
+<div class="h-40 sm:h-48 bg-gradient-to-br from-emerald to-emerald-light flex items-center justify-center">
+<i class="fas fa-video text-4xl text-white opacity-30"></i>
+</div>
 <div class="p-4">
-<h3 class="font-semibold text-emerald">Chemistry: Organic Basics</h3>
-<p class="text-sm text-gray-600">Class 12th | 38 mins</p>
+<h3 class="font-semibold text-sm sm:text-base text-emerald">Chemistry: Organic Basics</h3>
+<p class="text-xs sm:text-sm text-gray-600">Class 12th | 38 mins</p>
 </div>
 </div>
 </div>
-<div class="text-center mt-10">
-<a href="courses-videos.html" class="bg-emerald text-white px-8 py-3 rounded-lg hover:bg-emerald-light transition font-medium">
-        View All Premium Videos
+<div class="text-center mt-8 sm:mt-10">
+<a href="courses-videos.html" class="inline-block bg-emerald text-white px-6 sm:px-8 py-2 sm:py-3 rounded-lg text-sm sm:text-base hover:bg-emerald-light transition font-medium hover:shadow-lg transform hover:scale-105 duration-300">
+View All Premium Videos
 </a>
 </div>
 </div>
 </section>
 
 <!-- Contact Us Section -->
-<section id="contact" class="py-16 bg-gray-light">
-<div class="container mx-auto px-6">
-<h2 class="text-4xl font-bold text-center text-emerald mb-12 animate-slide-up">Contact Us</h2>
-<div class="max-w-2xl mx-auto bg-white p-8 rounded-2xl shadow-xl">
-<form onsubmit="submitContact(event)" class="space-y-6">
-<div class="grid md:grid-cols-2 gap-6">
+<section id="contact" class="py-12 sm:py-16 bg-white">
+<div class="container mx-auto px-4 sm:px-6">
+<h2 class="text-2xl sm:text-3xl lg:text-4xl font-bold text-center text-emerald mb-2 animate-slide-up">Contact Us</h2>
+<div class="h-1 w-20 bg-emerald-light mx-auto rounded-full mb-8 sm:mb-12"></div>
+<div class="max-w-2xl mx-auto bg-white p-6 sm:p-8 rounded-2xl shadow-xl animate-slide-up">
+<form onsubmit="submitContact(event)" class="space-y-4 sm:space-y-6">
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
 <div>
-<label class="block text-sm font-medium text-gray-700 mb-2">Name</label>
-<input type="text" id="contact-name" required class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald focus:border-transparent" placeholder="VICKY TEMRE">
-</div>
-<div>
-<label class="block text-sm font-medium text-gray-700 mb-2">Email</label>
-<input type="email" id="contact-email" required class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald focus:border-transparent" placeholder="john@example.com">
-</div>
+<label class="block text-xs sm:text-sm font-medium text-gray-700 mb-2">Name</label>
+<input type="text" id="contact-name" required class="w-full p-2 sm:p-3 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald focus:border-transparent transition hover:border-emerald" placeholder="Your Name">
 </div>
 <div>
-<label class="block text-sm font-medium text-gray-700 mb-2">Phone</label>
-<input type="tel" id="contact-phone" required class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald focus:border-transparent" placeholder="+91 8959161289">
+<label class="block text-xs sm:text-sm font-medium text-gray-700 mb-2">Email</label>
+<input type="email" id="contact-email" required class="w-full p-2 sm:p-3 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald focus:border-transparent transition hover:border-emerald" placeholder="your@email.com">
+</div>
 </div>
 <div>
-<label class="block text-sm font-medium text-gray-700 mb-2">Message</label>
-<textarea id="contact-message" rows="4" required class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald focus:border-transparent" placeholder="Your message..."></textarea>
+<label class="block text-xs sm:text-sm font-medium text-gray-700 mb-2">Phone</label>
+<input type="tel" id="contact-phone" required class="w-full p-2 sm:p-3 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald focus:border-transparent transition hover:border-emerald" placeholder="+91 9XXXXXXXXX">
 </div>
-<button type="submit" class="w-full bg-emerald text-white py-3 rounded-lg hover:bg-emerald-light transition font-semibold">
-          Send Message
+<div>
+<label class="block text-xs sm:text-sm font-medium text-gray-700 mb-2">Message</label>
+<textarea id="contact-message" rows="4" required class="w-full p-2 sm:p-3 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald focus:border-transparent transition hover:border-emerald" placeholder="Your message..."></textarea>
+</div>
+<button type="submit" class="w-full bg-emerald text-white py-2 sm:py-3 rounded-lg text-sm sm:text-base hover:bg-emerald-light transition font-semibold hover:shadow-lg transform hover:scale-105 duration-300">
+Send Message
 </button>
 </form>
-<div id="contact-success" class="hidden mt-6 p-4 bg-emerald-light text-white rounded-lg text-center">
-        Thank you! We’ll get back to you soon.
+<div id="contact-success" class="hidden mt-6 p-4 bg-emerald-light text-white rounded-lg text-center text-sm sm:text-base animate-bounce-slow">
+Thank you! We'll get back to you soon.
 </div>
 </div>
 </div>
@@ -370,79 +370,75 @@ class="absolute top-4 right-4 text-gray-500 hover:text-red-600 text-2xl">
 
 <!-- QR Modal -->
 <div id="qr-modal" class="fixed inset-0 bg-black bg-opacity-80 hidden flex items-center justify-center z-50 p-4">
-<div class="bg-white rounded-2xl p-8 max-w-xs w-full text-center shadow-2xl">
-<h3 class="text-2xl font-bold text-emerald mb-4">Scan to Pay</h3>
+<div class="bg-white rounded-2xl p-6 sm:p-8 max-w-xs w-full text-center shadow-2xl animate-modal-in">
+<h3 class="text-xl sm:text-2xl font-bold text-emerald mb-4">Scan to Pay</h3>
 <div id="qr-container" class="mx-auto mb-6 border-4 border-emerald-light rounded-xl p-4 bg-white"></div>
-<p id="qr-course" class="font-bold text-lg text-emerald"></p>
-<p id="qr-amount" class="text-3xl font-bold text-emerald-light mb-4"></p>
-<button id="confirm-btn" class="bg-emerald text-white px-6 py-3 rounded-lg hover:bg-emerald-light w-full mb-3 font-medium">
-      Payment Done..
+<p id="qr-course" class="font-bold text-base sm:text-lg text-emerald"></p>
+<p id="qr-amount" class="text-2xl sm:text-3xl font-bold text-emerald-light mb-4"></p>
+<button id="confirm-btn" class="bg-emerald text-white px-6 py-3 rounded-lg hover:bg-emerald-light w-full mb-3 font-medium text-sm sm:text-base hover:shadow-lg transform hover:scale-105 duration-300">
+Payment Done
 </button>
-<button onclick="document.getElementById('qr-modal').classList.add('hidden')" class="text-red-500 hover:underline">
-      Close
+<button onclick="document.getElementById('qr-modal').classList.add('hidden')" class="text-red-500 hover:underline text-sm">
+Close
 </button>
 </div>
 </div>
 
 <!-- Footer -->
-<footer class="bg-emerald text-white py-12">
-<div class="container mx-auto grid md:grid-cols-4 gap-8 px-6">
-<div>
-<h3 class="text-xl font-bold mb-4">About Us</h3>
-<p class="text-sm">Leader in education since 2010. Top-quality coaching for board & competitive exams.</p>
+<footer class="bg-emerald text-white py-8 sm:py-12">
+<div class="container mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8 px-4 sm:px-6">
+<div class="animate-slide-up" style="animation-delay: 0s">
+<h3 class="text-lg sm:text-xl font-bold mb-4">About Us</h3>
+<p class="text-xs sm:text-sm">Leader in education since 2010. Top-quality coaching for board & competitive exams.</p>
 </div>
-<div>
-<h3 class="text-xl font-bold mb-4">Contact</h3>
-<p class="text-sm">+91 89-59161289</p>
-<p class="text-sm">vickytemre13@gmail.com</p>
-<p class="text-sm">chimnakhari, India</p>
+<div class="animate-slide-up" style="animation-delay: 0.1s">
+<h3 class="text-lg sm:text-xl font-bold mb-4">Contact</h3>
+<p class="text-xs sm:text-sm">+91 8959161289</p>
+<p class="text-xs sm:text-sm">vickytemre13@gmail.com</p>
+<p class="text-xs sm:text-sm">Bhopal, India</p>
 </div>
-<div>
-<h3 class="text-xl font-bold mb-4">Hours</h3>
-<p class="text-sm">Mon-Fri: 6AM - 9AM</p>
-<p class="text-sm">Sat: 6AM - 9AM</p>
-<p class="text-sm">Sun: Closed</p>
+<div class="animate-slide-up" style="animation-delay: 0.2s">
+<h3 class="text-lg sm:text-xl font-bold mb-4">Hours</h3>
+<p class="text-xs sm:text-sm">Mon-Fri: 6AM - 9AM</p>
+<p class="text-xs sm:text-sm">Sat: 6AM - 9AM</p>
+<p class="text-xs sm:text-sm">Sun: Closed</p>
 </div>
-<div>
-<h3 class="text-xl font-bold mb-4">Links</h3>
-<ul class="text-sm space-y-1">
-<li><a href="#home" class="hover:text-emerald-light">Home</a></li>
-<li><a href="#courses" class="hover:text-emerald-light">Courses</a></li>
-<li><a href="#video-lectures" class="hover:text-emerald-light">Videos</a></li>
-<li><a href="#contact" class="hover:text-emerald-light">Contact</a></li>
+<div class="animate-slide-up" style="animation-delay: 0.3s">
+<h3 class="text-lg sm:text-xl font-bold mb-4">Links</h3>
+<ul class="text-xs sm:text-sm space-y-1">
+<li><a href="#home" class="hover:text-emerald-light transition hover:translate-x-1">Home</a></li>
+<li><a href="#courses" class="hover:text-emerald-light transition hover:translate-x-1">Courses</a></li>
+<li><a href="#video-lectures" class="hover:text-emerald-light transition hover:translate-x-1">Videos</a></li>
+<li><a href="#contact" class="hover:text-emerald-light transition hover:translate-x-1">Contact</a></li>
 </ul>
 </div>
 </div>
-<div class="text-center mt-8 text-sm border-t border-emerald-light pt-4">
-    © 2025 Genius Coaching Classes. All Rights Reserved.
+<div class="text-center mt-8 text-xs sm:text-sm border-t border-emerald-light pt-4">
+© 2025 Genius Coaching Classes. All Rights Reserved.
 </div>
 </footer>
 
 <!-- Scripts -->
 <script>
 // Close modals on background click
-document.getElementById('faculty-modal').addEventListener('click', function(e) { if (e.target === this) this.classList.add('hidden'); });
-document.getElementById('results-modal').addEventListener('click', function(e) { if (e.target === this) this.classList.add('hidden'); });
-document.getElementById('smart-modal').addEventListener('click', function(e) { if (e.target === this) this.classList.add('hidden'); });
-document.getElementById('notes-modal').addEventListener('click', function(e) { if (e.target === this) this.classList.add('hidden'); });
-document.getElementById('admission-modal').addEventListener('click', function(e) { if (e.target === this) this.classList.add('hidden'); });
-document.getElementById('course-detail-modal').addEventListener('click', function(e) { if (e.target === this) this.classList.add('hidden'); });
-document.getElementById('testseries-modal').addEventListener('click', function(e) { if (e.target === this) this.classList.add('hidden'); });
-document.getElementById('assignments-modal').addEventListener('click', function(e) { if (e.target === this) this.classList.add('hidden'); });
+['faculty-modal', 'results-modal', 'smart-modal', 'notes-modal', 'admission-modal', 'course-detail-modal', 'testseries-modal', 'assignments-modal'].forEach(id => {
+document.getElementById(id).addEventListener('click', function(e) {
+if (e.target === this) this.classList.add('hidden');
+});
+});
 
 // Mobile Menu Toggle
 document.getElementById('navbarToggler').addEventListener('click', () => {
 const nav = document.getElementById('navbarNav');
 nav.classList.toggle('hidden');
-nav.classList.toggle('flex');
-nav.classList.toggle('flex-col');
-nav.classList.toggle('space-y-4');
-nav.classList.toggle('p-4');
-nav.classList.toggle('bg-emerald');
 nav.classList.toggle('absolute');
-nav.classList.toggle('top-16');
+nav.classList.toggle('top-full');
 nav.classList.toggle('left-0');
 nav.classList.toggle('w-full');
+nav.classList.toggle('bg-emerald');
+nav.classList.toggle('flex-col');
+nav.classList.toggle('p-4');
+nav.classList.toggle('shadow-lg');
 });
 
 // Contact Form
@@ -452,48 +448,48 @@ document.getElementById('contact-success').classList.remove('hidden');
 setTimeout(() => {
 document.getElementById('contact-success').classList.add('hidden');
 e.target.reset();
-  }, 3000);
+}, 3000);
 }
 
 // Faculty Modal
 function showFacultyModal() {
 const content = document.getElementById('faculty-content');
 content.innerHTML = `
-    <h2 class="text-3xl font-bold text-emerald mb-6 text-center">Meet Our Expert Faculty</h2>
-    <p class="text-gray-600 mb-8 text-center">B.Ed & D>EI>Ed alumni dedicated to your success.</p>
-    <div class="grid md:grid-cols-2 gap-8">
-      <div class="text-center">
-        <img src="https://i.ytimg.com/vi/4_orSQMJ4mw/hqdefault.jpg"
-             alt="mr. Ranjit kumar rhangdale" class="w-48 h-48 rounded-full mx-auto mb-4 shadow-lg object-cover">
-        <h3 class="text-xl font-bold text-emerald mb-2">mr. Ranjit Kumar rhandale</h3>
-        <p class="text-emerald-light font-semibold mb-2">Physics Expert</p>
-        <ul class="text-sm text-gray-600 space-y-1">
-          <li>chimnakhari school Alumni (B.Ed)</li>
-          <li>10+ Years Experience</li>
-          <li>100+ Students Mentored</li>
-          <li>Board exam Topper Coach</li>
-        </ul>
-      </div>
-      <div class="text-center">
-        <img src="https://i.ytimg.com/vi/4_orSQMJ4mw/hqdefault.jpg"
-             alt="Mr.Madhyam bhaiya " class="w-48 h-48 rounded-full mx-auto mb-4 shadow-lg object-cover">
-        <h3 class="text-xl font-bold text-emerald mb-2">Ms. madhyam bhaiya</h3>
-        <p class="text-emerald-light font-semibold mb-2">Mathematics Specialist</p>
-        <ul class="text-sm text-gray-100 space-y-1">
-          <li>barghat school Alumni (MSc)</li>
-          <li>12+ Years Experience</li>
-          <li>300+ Board Rankers</li>
-          <li>Board Exams 100% Success</li>
-        </ul>
-      </div>
-    </div>
-    <div class="text-center mt-6">
-      <button onclick="document.getElementById('faculty-modal').classList.add('hidden')"
-              class="bg-emerald text-white px-6 py-3 rounded-lg hover:bg-emerald-light transition">
-        Close
-      </button>
-    </div>
-  `;
+<h2 class="text-2xl sm:text-3xl font-bold text-emerald mb-6 text-center">Meet Our Expert Faculty</h2>
+<p class="text-sm sm:text-base text-gray-600 mb-8 text-center">B.Ed & D.EI.Ed alumni dedicated to your success.</p>
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-6 sm:gap-8">
+<div class="text-center animate-slide-up">
+<div class="w-40 h-40 bg-gradient-to-br from-emerald to-emerald-light rounded-full mx-auto mb-4 shadow-lg flex items-center justify-center">
+<i class="fas fa-user-tie text-5xl text-white opacity-40"></i>
+</div>
+<h3 class="text-lg sm:text-xl font-bold text-emerald mb-2">Mr. Ranjit Kumar</h3>
+<p class="text-emerald-light font-semibold mb-2 text-sm">Physics Expert</p>
+<ul class="text-xs sm:text-sm text-gray-600 space-y-1">
+<li>✓ 10+ Years Experience</li>
+<li>✓ 100+ Students Mentored</li>
+<li>✓ Board Exam Topper Coach</li>
+</ul>
+</div>
+<div class="text-center animate-slide-up" style="animation-delay: 0.1s">
+<div class="w-40 h-40 bg-gradient-to-br from-emerald-light to-emerald rounded-full mx-auto mb-4 shadow-lg flex items-center justify-center">
+<i class="fas fa-user-tie text-5xl text-white opacity-40"></i>
+</div>
+<h3 class="text-lg sm:text-xl font-bold text-emerald mb-2">Ms. Madhyam</h3>
+<p class="text-emerald-light font-semibold mb-2 text-sm">Mathematics Specialist</p>
+<ul class="text-xs sm:text-sm text-gray-600 space-y-1">
+<li>✓ 12+ Years Experience</li>
+<li>✓ 300+ Board Rankers</li>
+<li>✓ 100% Success Rate</li>
+</ul>
+</div>
+</div>
+<div class="text-center mt-6">
+<button onclick="document.getElementById('faculty-modal').classList.add('hidden')"
+class="bg-emerald text-white px-6 py-3 rounded-lg hover:bg-emerald-light transition text-sm sm:text-base">
+Close
+</button>
+</div>
+`;
 document.getElementById('faculty-modal').classList.remove('hidden');
 }
 
@@ -501,42 +497,29 @@ document.getElementById('faculty-modal').classList.remove('hidden');
 function showResultsModal() {
 const content = document.getElementById('results-content');
 content.innerHTML = `
-    <h2 class="text-3xl font-bold text-emerald mb-6 text-center">Our Proven Results: Toppers Gallery</h2>
-    <p class="text-gray-600 mb-8 text-center">Celebrating 10+ rankers every year from genius Coaching!</p>
-    <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
-      <div class="text-center">
-        <img src=""
-             alt="dharni temre " class="w-full h-48 object-cover rounded-lg shadow-md mx-auto mb-2">
-        <p class="font-semibold text-emerald">dharni temre<br>Class 10: 500/500</p>
-      </div>
-      <div class="text-center">
-        <img src=""
-             alt="urvashi temre" class="w-full h-48 object-cover rounded-lg shadow-md mx-auto mb-2">
-        <p class="font-semibold text-emerald">urvashi temre<br>Class 12: 499/500</p>
-      </div>
-      <div class="text-center">
-        <img src="https://images.unsplash.com/photo-1503676260728-1c00da094a0b?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&h=300&q=80"
-             alt="Vicky temre" class="w-full h-48 object-cover rounded-lg shadow-md mx-auto mb-2">
-        <p class="font-semibold text-emerald">vicky temre<br>99.80% - Commerce</p>
-      </div>
-      <div class="text-center">
-        <img src=""
-             alt="lucky temre" class="w-full h-48 object-cover rounded-lg shadow-md mx-auto mb-2">
-        <p class="font-semibold text-emerald">lucky temre<br>99.6% - Humanities</p>
-      </div>
-      <div class="text-center">
-        <img src=""
-             alt="neelam chhabra" class="w-full h-48 object-cover rounded-lg shadow-md mx-auto mb-2">
-        <p class="font-semibold text-emerald">neelam Chhabra<br>98.2% - Commerce</p>
-      </div>
-    </div>
-    <div class="text-center">
-      <button onclick="document.getElementById('results-modal').classList.add('hidden')"
-              class="bg-emerald text-white px-6 py-3 rounded-lg hover:bg-emerald-light transition">
-        Close
-      </button>
-    </div>
-  `;
+<h2 class="text-2xl sm:text-3xl font-bold text-emerald mb-6 text-center">Our Proven Results</h2>
+<p class="text-sm sm:text-base text-gray-600 mb-8 text-center">Celebrating 10+ rankers every year!</p>
+<div class="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-4 mb-6">
+<div class="text-center animate-bounce" style="animation-delay: 0s">
+<div class="w-full h-32 sm:h-40 bg-gradient-to-br from-emerald-light to-emerald rounded-lg mb-2 flex items-center justify-center text-white text-lg sm:text-2xl font-bold shadow-lg">100%</div>
+<p class="text-xs sm:text-sm font-semibold text-emerald">Success Rate</p>
+</div>
+<div class="text-center animate-bounce" style="animation-delay: 0.2s">
+<div class="w-full h-32 sm:h-40 bg-gradient-to-br from-emerald to-emerald-light rounded-lg mb-2 flex items-center justify-center text-white text-lg sm:text-2xl font-bold shadow-lg">10+</div>
+<p class="text-xs sm:text-sm font-semibold text-emerald">Board Rankers</p>
+</div>
+<div class="text-center animate-bounce" style="animation-delay: 0.4s">
+<div class="w-full h-32 sm:h-40 bg-gradient-to-br from-emerald-light to-emerald rounded-lg mb-2 flex items-center justify-center text-white text-lg sm:text-2xl font-bold shadow-lg">500+</div>
+<p class="text-xs sm:text-sm font-semibold text-emerald">Happy Students</p>
+</div>
+</div>
+<div class="text-center">
+<button onclick="document.getElementById('results-modal').classList.add('hidden')"
+class="bg-emerald text-white px-6 py-3 rounded-lg hover:bg-emerald-light transition text-sm sm:text-base">
+Close
+</button>
+</div>
+`;
 document.getElementById('results-modal').classList.remove('hidden');
 }
 
@@ -544,37 +527,33 @@ document.getElementById('results-modal').classList.remove('hidden');
 function showSmartModal() {
 const content = document.getElementById('smart-content');
 content.innerHTML = `
-    <h2 class="text-3xl font-bold text-emerald mb-6 text-center">Our Smart Classrooms</h2>
-    <p class="text-gray-600 mb-8 text-center">Experience cutting-edge learning with digital tools and interactive tech.</p>
-    <div class="grid md:grid-cols-2 gap-4 mb-6">
-      <div>
-        <img src=""
-             alt="Interactive Digital Board" class="w-full h-48 object-cover rounded-lg shadow-md mb-2">
-        <p class="text-sm text-gray-600">Interactive Boards for Live Demos</p>
-      </div>
-      <div>
-        <img src=""
-             alt="Modern Classroom Setup" class="w-full h-48 object-cover rounded-lg shadow-md mb-2">
-        <p class="text-sm text-gray-600">best Rooms with High-Tech Projectors</p>
-      </div>
-      <div>
-        <img src=""
-             alt="Student Collaboration Space" class="w-full h-48 object-cover rounded-lg shadow-md mb-2">
-        <p class="text-sm text-gray-600">Collaborative Learning Stations</p>
-      </div>
-      <div>
-        <img src=""
-             alt="Tech-Enabled Doubt Solving" class="w-full h-48 object-cover rounded-lg shadow-md mb-2">
-        <p class="text-sm text-gray-600">Live Doubt-Solving with AV Aids</p>
-      </div>
-    </div>
-    <div class="text-center">
-      <button onclick="document.getElementById('smart-modal').classList.add('hidden')"
-              class="bg-emerald text-white px-6 py-3 rounded-lg hover:bg-emerald-light transition">
-        Close
-      </button>
-    </div>
-  `;
+<h2 class="text-2xl sm:text-3xl font-bold text-emerald mb-6 text-center">Our Smart Classrooms</h2>
+<p class="text-sm sm:text-base text-gray-600 mb-8 text-center">Cutting-edge learning with digital tools and interactive tech.</p>
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
+<div class="bg-emerald-light bg-opacity-20 p-4 rounded-lg hover:shadow-lg transition transform hover:scale-105 duration-300 animate-slide-up">
+<h4 class="font-bold text-emerald mb-2">Interactive Digital Boards</h4>
+<p class="text-xs sm:text-sm text-gray-600">Live demos and visual learning</p>
+</div>
+<div class="bg-emerald-light bg-opacity-20 p-4 rounded-lg hover:shadow-lg transition transform hover:scale-105 duration-300 animate-slide-up" style="animation-delay: 0.1s">
+<h4 class="font-bold text-emerald mb-2">High-Tech Projectors</h4>
+<p class="text-xs sm:text-sm text-gray-600">Crystal clear presentations</p>
+</div>
+<div class="bg-emerald-light bg-opacity-20 p-4 rounded-lg hover:shadow-lg transition transform hover:scale-105 duration-300 animate-slide-up" style="animation-delay: 0.2s">
+<h4 class="font-bold text-emerald mb-2">Collaborative Spaces</h4>
+<p class="text-xs sm:text-sm text-gray-600">Group learning stations</p>
+</div>
+<div class="bg-emerald-light bg-opacity-20 p-4 rounded-lg hover:shadow-lg transition transform hover:scale-105 duration-300 animate-slide-up" style="animation-delay: 0.3s">
+<h4 class="font-bold text-emerald mb-2">Live Doubt Solving</h4>
+<p class="text-xs sm:text-sm text-gray-600">Instant assistance available</p>
+</div>
+</div>
+<div class="text-center">
+<button onclick="document.getElementById('smart-modal').classList.add('hidden')"
+class="bg-emerald text-white px-6 py-3 rounded-lg hover:bg-emerald-light transition text-sm sm:text-base">
+Close
+</button>
+</div>
+`;
 document.getElementById('smart-modal').classList.remove('hidden');
 }
 
@@ -582,289 +561,169 @@ document.getElementById('smart-modal').classList.remove('hidden');
 function showNotesModal() {
 const content = document.getElementById('notes-content');
 content.innerHTML = `
-    <h2 class="text-3xl font-bold text-emerald mb-6 text-center">Class-wise Notes</h2>
-    <p class="text-gray-600 mb-8 text-center">Click on any class to download the notes (PDF).</p>
-    <div class="grid md:grid-cols-2 gap-6">
-      <div class="bg-emerald-light bg-opacity-10 p-6 rounded-xl cursor-pointer hover:bg-opacity-20 transition text-center"
-           onclick="window.open('https://drive.google.com/drive/u/2/folders/1RoAHn52jqU1pKQqhksvPuL8Hlj0ZV3h6','_blank')">
-        <h3 class="text-xl font-bold text-emerald mb-2">Class 9th</h3>
-        <p class="text-sm text-gray-600">Mathematics, Science, SST, English</p>
-      </div>
-      <div class="bg-emerald-light bg-opacity-10 p-6 rounded-xl cursor-pointer hover:bg-opacity-20 transition text-center"
-           onclick="window.open('https://drive.google.com/drive/u/2/folders/1GFh26M5AdrFX5cFBxAyMEO-2wKUJH3hO','_blank')">
-        <h3 class="text-xl font-bold text-emerald mb-2">Class 10th</h3>
-        <p class="text-sm text-gray-600">Board-level notes + PYQs</p>
-      </div>
-      <div class="bg-emerald-light bg-opacity-10 p-6 rounded-xl cursor-pointer hover:bg-opacity-20 transition text-center"
-           onclick="window.open('https://drive.google.com/drive/u/2/folders/1ZBNUJP10mbz2yLo1fyJ2EIWTAhRzZkLt','_blank')">
-        <h3 class="text-xl font-bold text-emerald mb-2">Class 11th PCMB</h3>
-        <p class="text-sm text-gray-600">JEE/NEET foundation notes</p>
-      </div>
-      <div class="bg-emerald-light bg-opacity-10 p-6 rounded-xl cursor-pointer hover:bg-opacity-20 transition text-center"
-           onclick="window.open('https://drive.google.com/drive/u/2/folders/1ySql05Y5OnDmgTNR4X4Vyn1_j4RST7v7','_blank')">
-        <h3 class="text-xl font-bold text-emerald mb-2">Class 12th PCMB</h3>
-        <p class="text-sm text-gray-600">Advanced level + revision sheets</p>
-      </div>
-    </div>
-    <div class="text-center mt-8">
-      <button onclick="document.getElementById('notes-modal').classList.add('hidden')"
-              class="bg-emerald text-white px-6 py-3 rounded-lg hover:bg-emerald-light transition">
-        Close
-      </button>
-    </div>
-  `;
+<h2 class="text-2xl sm:text-3xl font-bold text-emerald mb-6 text-center">Class-wise Notes</h2>
+<p class="text-sm sm:text-base text-gray-600 mb-8 text-center">Click to download notes (PDF)</p>
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+<div class="bg-emerald-light bg-opacity-10 p-6 rounded-xl cursor-pointer hover:bg-opacity-20 transition text-center hover:shadow-lg transform hover:scale-105 duration-300 animate-slide-up"
+onclick="window.open('https://drive.google.com/drive/u/2/folders/1RoAHn52jqU1pKQqhksvPuL8Hlj0ZV3h6','_blank')">
+<i class="fas fa-book text-3xl text-emerald mb-2"></i>
+<h3 class="text-lg font-bold text-emerald mb-2">Class 9th</h3>
+<p class="text-xs sm:text-sm text-gray-600">Mathematics, Science, SST</p>
+</div>
+<div class="bg-emerald-light bg-opacity-10 p-6 rounded-xl cursor-pointer hover:bg-opacity-20 transition text-center hover:shadow-lg transform hover:scale-105 duration-300 animate-slide-up" style="animation-delay: 0.1s"
+onclick="window.open('https://drive.google.com/drive/u/2/folders/1GFh26M5AdrFX5cFBxAyMEO-2wKUJH3hO','_blank')">
+<i class="fas fa-book text-3xl text-emerald mb-2"></i>
+<h3 class="text-lg font-bold text-emerald mb-2">Class 10th</h3>
+<p class="text-xs sm:text-sm text-gray-600">Board-level notes + PYQs</p>
+</div>
+<div class="bg-emerald-light bg-opacity-10 p-6 rounded-xl cursor-pointer hover:bg-opacity-20 transition text-center hover:shadow-lg transform hover:scale-105 duration-300 animate-slide-up" style="animation-delay: 0.2s"
+onclick="window.open('https://drive.google.com/drive/u/2/folders/1ZBNUJP10mbz2yLo1fyJ2EIWTAhRzZkLt','_blank')">
+<i class="fas fa-book text-3xl text-emerald mb-2"></i>
+<h3 class="text-lg font-bold text-emerald mb-2">Class 11th PCMB</h3>
+<p class="text-xs sm:text-sm text-gray-600">JEE/NEET foundation</p>
+</div>
+<div class="bg-emerald-light bg-opacity-10 p-6 rounded-xl cursor-pointer hover:bg-opacity-20 transition text-center hover:shadow-lg transform hover:scale-105 duration-300 animate-slide-up" style="animation-delay: 0.3s"
+onclick="window.open('https://drive.google.com/drive/u/2/folders/1ySql05Y5OnDmgTNR4X4Vyn1_j4RST7v7','_blank')">
+<i class="fas fa-book text-3xl text-emerald mb-2"></i>
+<h3 class="text-lg font-bold text-emerald mb-2">Class 12th PCMB</h3>
+<p class="text-xs sm:text-sm text-gray-600">Advanced level notes</p>
+</div>
+</div>
+<div class="text-center mt-8">
+<button onclick="document.getElementById('notes-modal').classList.add('hidden')"
+class="bg-emerald text-white px-6 py-3 rounded-lg hover:bg-emerald-light transition text-sm sm:text-base">
+Close
+</button>
+</div>
+`;
 document.getElementById('notes-modal').classList.remove('hidden');
 }
 
-// Test-Series ulsoved  Modal
+// Test Series Modal
 function showTestSeriesModal() {
 const content = document.getElementById('testseries-content');
 content.innerHTML = `
-    <h2 class="text-3xl font-bold text-emerald mb-6 text-center">Test Series</h2>
-    <p class="text-gray-600 mb-8 text-center">Full-length mock tests, chapter-wise tests, and previous-year papers.</p>
-    <div class="grid md:grid-cols-2 gap-6">
-      <div class="bg-emerald-light bg-opacity-10 p-6 rounded-xl cursor-pointer hover:bg-opacity-20 transition text-center"
-           onclick="window.open('https://drive.google.com/drive/u/2/folders/1Unxc2-LARdBIrt-jA-yZzyvrqOkafxIH','_blank')">
-        <h3 class="text-xl font-bold text-emerald mb-2">Class 9th</h3>
-        <p class="text-sm text-gray-600">10 Full Syllabus + 5 Unit Tests</p>
-      </div>
-      <div class="bg-emerald-light bg-opacity-10 p-6 rounded-xl cursor-pointer hover:bg-opacity-20 transition text-center"
-           onclick="window.open('https://drive.google.com/drive/u/2/folders/12VbhjHP3h4eLKlqTUI_qE0KFzPFuV0eW','_blank')">
-        <h3 class="text-xl font-bold text-emerald mb-2">Class 10th</h3>
-        <p class="text-sm text-gray-600">Board Pattern + 15 Mock Tests</p>
-      </div>
-      <div class="bg-emerald-light bg-opacity-10 p-6 rounded-xl cursor-pointer hover:bg-opacity-20 transition text-center"
-           onclick="window.open('https://drive.google.com/drive/u/2/folders/11zYtw_AMkLMdHe3N-RUuXXG5LGEBp60J','_blank')">
-        <h3 class="text-xl font-bold text-emerald mb-2">Class 11th PCMB</h3>
-        <p class="text-sm text-gray-600">JEE/NEET Foundation Tests</p>
-      </div>
-      <div class="bg-emerald-light bg-opacity-10 p-6 rounded-xl cursor-pointer hover:bg-opacity-20 transition text-center"
-           onclick="window.open('https://drive.google.com/drive/u/2/folders/1WmGr72PZTUYuQH_SWYcQtJ8aa67cfpvC','_blank')">
-        <h3 class="text-xl font-bold text-emerald mb-2">Class 12th PCMB</h3>
-        <p class="text-sm text-gray-600">Advanced Mocks + PYQs</p>
-      </div>
-    </div>
-    <div class="text-center mt-8">
-      <button onclick="document.getElementById('testseries-modal').classList.add('hidden')"
-              class="bg-emerald text-white px-6 py-3 rounded-lg hover:bg-emerald-light transition">
-        Close
-      </button>
-    </div>
-  `;
+<h2 class="text-2xl sm:text-3xl font-bold text-emerald mb-6 text-center">Test Series</h2>
+<p class="text-sm sm:text-base text-gray-600 mb-8 text-center">Full-length mock tests & practice papers</p>
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+<div class="bg-emerald-light bg-opacity-10 p-6 rounded-xl cursor-pointer hover:bg-opacity-20 transition text-center hover:shadow-lg transform hover:scale-105 duration-300 animate-slide-up"
+onclick="window.open('https://drive.google.com/drive/u/2/folders/1Unxc2-LARdBIrt-jA-yZzyvrqOkafxIH','_blank')">
+<i class="fas fa-list-check text-3xl text-emerald mb-2"></i>
+<h3 class="text-lg font-bold text-emerald mb-2">Class 9th</h3>
+<p class="text-xs sm:text-sm text-gray-600">10 Full Syllabus + 5 Unit Tests</p>
+</div>
+<div class="bg-emerald-light bg-opacity-10 p-6 rounded-xl cursor-pointer hover:bg-opacity-20 transition text-center hover:shadow-lg transform hover:scale-105 duration-300 animate-slide-up" style="animation-delay: 0.1s"
+onclick="window.open('https://drive.google.com/drive/u/2/folders/12VbhjHP3h4eLKlqTUI_qE0KFzPFuV0eW','_blank')">
+<i class="fas fa-list-check text-3xl text-emerald mb-2"></i>
+<h3 class="text-lg font-bold text-emerald mb-2">Class 10th</h3>
+<p class="text-xs sm:text-sm text-gray-600">Board Pattern + 15 Mocks</p>
+</div>
+<div class="bg-emerald-light bg-opacity-10 p-6 rounded-xl cursor-pointer hover:bg-opacity-20 transition text-center hover:shadow-lg transform hover:scale-105 duration-300 animate-slide-up" style="animation-delay: 0.2s"
+onclick="window.open('https://drive.google.com/drive/u/2/folders/11zYtw_AMkLMdHe3N-RUuXXG5LGEBp60J','_blank')">
+<i class="fas fa-list-check text-3xl text-emerald mb-2"></i>
+<h3 class="text-lg font-bold text-emerald mb-2">Class 11th PCMB</h3>
+<p class="text-xs sm:text-sm text-gray-600">JEE/NEET Foundation</p>
+</div>
+<div class="bg-emerald-light bg-opacity-10 p-6 rounded-xl cursor-pointer hover:bg-opacity-20 transition text-center hover:shadow-lg transform hover:scale-105 duration-300 animate-slide-up" style="animation-delay: 0.3s"
+onclick="window.open('https://drive.google.com/drive/u/2/folders/1WmGr72PZTUYuQH_SWYcQtJ8aa67cfpvC','_blank')">
+<i class="fas fa-list-check text-3xl text-emerald mb-2"></i>
+<h3 class="text-lg font-bold text-emerald mb-2">Class 12th PCMB</h3>
+<p class="text-xs sm:text-sm text-gray-600">Advanced + PYQs</p>
+</div>
+</div>
+<div class="text-center mt-8">
+<button onclick="document.getElementById('testseries-modal').classList.add('hidden')"
+class="bg-emerald text-white px-6 py-3 rounded-lg hover:bg-emerald-light transition text-sm sm:text-base">
+Close
+</button>
+</div>
+`;
 document.getElementById('testseries-modal').classList.remove('hidden');
 }
 
-// Assignments Modal (NEW FUNCTION)
+// Assignments Modal
 function showAssignmentsModal() {
 const content = document.getElementById('assignments-content');
 content.innerHTML = `
-    <h2 class="text-3xl font-bold text-emerald mb-6 text-center">Assignments</h2>
-    <p class="text-gray-600 mb-8 text-center">Click a class to download the assignment PDF.</p>
-    <div class="grid md:grid-cols-2 gap-6">
-      <div class="bg-emerald-light bg-opacity-10 p-6 rounded-xl cursor-pointer hover:bg-opacity-20 transition text-center"
-           onclick="window.open('https://1drv.ms/w/c/594193f185749a38/IQBifNQ5PWJMRKkTkDBVxBSxAcZMZD2EXihf6o2BCjjWZf8?e=4Wyv9M/class9.pdf','_blank')">
-        <h3 class="text-xl font-bold text-emerald mb-2">Class 9th</h3>
-        <p class="text-sm text-gray-600">Maths, Science, SST, English</p>
-      </div>
-      <div class="bg-emerald-light bg-opacity-10 p-6 rounded-xl cursor-pointer hover:bg-opacity-20 transition text-center"
-           onclick="window.open('https://1drv.ms/w/c/594193f185749a38/IQAh2gDMybL6Ronrr52pBrluAZla3r541hAl-nzmgH9r_v4?e=NDE0Ko/class10.pdf','_blank')">
-        <h3 class="text-xl font-bold text-emerald mb-2">Class 10th</h3>
-        <p class="text-sm text-gray-600">Board-level assignments + PYQs</p>
-      </div>
-      <div class="bg-emerald-light bg-opacity-10 p-6 rounded-xl cursor-pointer hover:bg-opacity-20 transition text-center"
-           onclick="window.open('https://1drv.ms/w/c/594193f185749a38/IQAS_vXQAhaYT7OBSbwOaUaKAbslugTZmfgmrHD5_XEGotw?e=XxgOep/class11.pdf','_blank')">
-        <h3 class="text-xl font-bold text-emerald mb-2">Class 11th PCMB</h3>
-        <p class="text-sm text-gray-600">JEE/NEET foundation assignments</p>
-      </div>
-      <div class="bg-emerald-light bg-opacity-10 p-6 rounded-xl cursor-pointer hover:bg-opacity-20 transition text-center"
-           onclick="window.open('https://1drv.ms/w/c/594193f185749a38/IQDm7cZJAxj3Q6vArYTnErdKARaXG2GjYTAcOvD-Xkhw-aM?e=g6DPVz/class12.pdf','_blank')">
-        <h3 class="text-xl font-bold text-emerald mb-2">Class 12th PCMB</h3>
-        <p class="text-sm text-gray-600">Advanced level + revision sheets</p>
-      </div>
-    </div>
-    <div class="text-center mt-8">
-      <button onclick="document.getElementById('assignments-modal').classList.add('hidden')"
-              class="bg-emerald text-white px-6 py-3 rounded-lg hover:bg-emerald-light transition">
-        Close
-      </button>
-    </div>
-  `;
+<h2 class="text-2xl sm:text-3xl font-bold text-emerald mb-6 text-center">Assignments</h2>
+<p class="text-sm sm:text-base text-gray-600 mb-8 text-center">Download assignment PDFs</p>
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+<div class="bg-emerald-light bg-opacity-10 p-6 rounded-xl cursor-pointer hover:bg-opacity-20 transition text-center hover:shadow-lg transform hover:scale-105 duration-300 animate-slide-up"
+onclick="window.open('https://1drv.ms/w/c/594193f185749a38/IQBifNQ5PWJMRKkTkDBVxBSxAcZMZD2EXihf6o2BCjjWZf8','_blank')">
+<i class="fas fa-file-pdf text-3xl text-emerald mb-2"></i>
+<h3 class="text-lg font-bold text-emerald mb-2">Class 9th</h3>
+<p class="text-xs sm:text-sm text-gray-600">Maths, Science, SST</p>
+</div>
+<div class="bg-emerald-light bg-opacity-10 p-6 rounded-xl cursor-pointer hover:bg-opacity-20 transition text-center hover:shadow-lg transform hover:scale-105 duration-300 animate-slide-up" style="animation-delay: 0.1s"
+onclick="window.open('https://1drv.ms/w/c/594193f185749a38/IQAh2gDMybL6Ronrr52pBrluAZla3r541hAl-nzmgH9r_v4','_blank')">
+<i class="fas fa-file-pdf text-3xl text-emerald mb-2"></i>
+<h3 class="text-lg font-bold text-emerald mb-2">Class 10th</h3>
+<p class="text-xs sm:text-sm text-gray-600">Board-level assignments</p>
+</div>
+<div class="bg-emerald-light bg-opacity-10 p-6 rounded-xl cursor-pointer hover:bg-opacity-20 transition text-center hover:shadow-lg transform hover:scale-105 duration-300 animate-slide-up" style="animation-delay: 0.2s"
+onclick="window.open('https://1drv.ms/w/c/594193f185749a38/IQAS_vXQAhaYT7OBSbwOaUaKAbslugTZmfgmrHD5_XEGotw','_blank')">
+<i class="fas fa-file-pdf text-3xl text-emerald mb-2"></i>
+<h3 class="text-lg font-bold text-emerald mb-2">Class 11th PCMB</h3>
+<p class="text-xs sm:text-sm text-gray-600">JEE/NEET foundation</p>
+</div>
+<div class="bg-emerald-light bg-opacity-10 p-6 rounded-xl cursor-pointer hover:bg-opacity-20 transition text-center hover:shadow-lg transform hover:scale-105 duration-300 animate-slide-up" style="animation-delay: 0.3s"
+onclick="window.open('https://1drv.ms/w/c/594193f185749a38/IQDm7cZJAxj3Q6vArYTnErdKARaXG2GjYTAcOvD-Xkhw-aM','_blank')">
+<i class="fas fa-file-pdf text-3xl text-emerald mb-2"></i>
+<h3 class="text-lg font-bold text-emerald mb-2">Class 12th PCMB</h3>
+<p class="text-xs sm:text-sm text-gray-600">Advanced level</p>
+</div>
+</div>
+<div class="text-center mt-8">
+<button onclick="document.getElementById('assignments-modal').classList.add('hidden')"
+class="bg-emerald text-white px-6 py-3 rounded-lg hover:bg-emerald-light transition text-sm sm:text-base">
+Close
+</button>
+</div>
+`;
 document.getElementById('assignments-modal').classList.remove('hidden');
 }
 
-// Course Details Data
+// Course Data
 const courseData = {
-'9th': {
-title: 'Class 9th - Foundation Course comeing soon',
-price: '₹999',
-duration: '1 Year',
-subjects: [
-      { name: 'Mathematics', topics: 'Algebra, Geometry, Number System, Statistics' },
-      { name: 'Science', topics: 'Matter, Motion, Force, Atoms, Cells, Tissues' },
-      { name: 'Social Science', topics: 'History, Geography, Civics, Economics' },
-      { name: 'English', topics: 'Grammar, Literature, Writing Skills' }
-    ],
-features: [
-'Live Online Classes',
-'Weekly Tests & Assignments',
-'Doubt Clearing Sessions',
-'Study Material (PDF + Videos)',
-'Parent-Teacher Meetings'
-    ]
-  },
-'10th': {
-title: 'Class 10th - Board Exam Mastery comeing soon',
-price: '₹999',
-duration: '1 Year',
-subjects: [
-      { name: 'Mathematics (Standard)', topics: 'Trigonometry, Circles, Coordinate Geometry, Statistics' },
-      { name: 'Science', topics: 'Chemical Reactions, Light, Electricity, Human Eye, Sources of Energy' },
-      { name: 'Social Science', topics: 'Nationalism, Resources, Democracy, Outcomes of Democracy' },
-      { name: 'English', topics: 'First Flight, Footprints, Grammar, Letter Writing' }
-    ],
-features: [
-'Board Pattern Practice',
-'Previous Year Papers',
-'Mock Tests (10 Full Syllabus)',
-'Chapter-wise Revision',
-'Result-Oriented Strategy'
-    ]
-  },
-'11th': {
-title: 'Class 11th - JEE | NEET | PCMB Foundation coming soon [ please dont pay this QR ]',
-price: '₹1499',
-duration: '1 Year',
-subjects: [
-      { name: 'Physics', topics: 'Kinematics, Laws of Motion, Work & Energy, Rotational Motion' },
-      { name: 'Chemistry', topics: 'Basic Concepts, Atomic Structure, Chemical Bonding, States of Matter' },
-      { name: 'Mathematics', topics: 'Sets, Relations, Trigonometry, Complex Numbers, Sequences' },
-      { name: 'Biology', topics: 'Cell Structure, Biomolecules, Plant Physiology, Human Physiology' }
-    ],
-features: [
-'JEE & NEET Pattern Classes',
-'Daily Practice Problems (DPP)',
-'Weekly Mock Tests',
-'NCERT + Reference Books',
-'Doubt Sessions (Live + Recorded)',
-'Progress Tracking & Reports'
-    ]
-  },
-'12th': {
-title: 'Class 12th - JEE | NEET | PCMB Advanced coming soon [ please dont pay this QR ]',
-price: '₹1499',
-duration: '1 Year',
-subjects: [
-      { name: 'Physics', topics: 'Electrostatics, Current, Magnetism, Optics, Modern Physics' },
-      { name: 'Chemistry', topics: 'Organic Reactions, p-Block, Coordination, Surface Chemistry' },
-      { name: 'Mathematics', topics: 'Calculus, Vectors, 3D Geometry, Probability' },
-      { name: 'Biology', topics: 'Genetics, Evolution, Biotechnology, Ecology' }
-    ],
-features: [
-'Full Syllabus Coverage',
-'JEE Main & Advanced Papers',
-'NEET Previous Year Questions',
-'Revision Modules + Crash Course',
-'Rank Booster Sessions',
-'100% Board Exam Support'
-    ]
-  }
+'9th': {title: 'Class 9th - Foundation', price: '₹999', duration: '1 Year', subjects: [{name: 'Mathematics', topics: 'Algebra, Geometry, Number System'}, {name: 'Science', topics: 'Matter, Motion, Force, Atoms'}, {name: 'Social Science', topics: 'History, Geography, Civics'}, {name: 'English', topics: 'Grammar, Literature, Writing'}], features: ['Live Classes', 'Weekly Tests', 'Doubt Sessions', 'Study Material', 'Progress Reports']},
+'10th': {title: 'Class 10th - Board Mastery', price: '₹999', duration: '1 Year', subjects: [{name: 'Mathematics', topics: 'Trigonometry, Circles, Geometry'}, {name: 'Science', topics: 'Chemical Reactions, Light, Electricity'}, {name: 'Social Science', topics: 'Nationalism, Democracy, Resources'}, {name: 'English', topics: 'First Flight, Grammar, Writing'}], features: ['Board Pattern', 'PYQs', '10 Mock Tests', 'Chapter Revision', 'Success Strategy']},
+'11th': {title: 'Class 11th - JEE/NEET', price: '₹1499', duration: '1 Year', subjects: [{name: 'Physics', topics: 'Kinematics, Motion, Energy'}, {name: 'Chemistry', topics: 'Atomic Structure, Bonding'}, {name: 'Mathematics', topics: 'Sets, Trigonometry, Sequences'}, {name: 'Biology', topics: 'Cell Structure, Physiology'}], features: ['JEE/NEET Pattern', 'DPP', 'Mock Tests', 'NCERT + Reference', 'Progress Tracking']},
+'12th': {title: 'Class 12th - Advanced', price: '₹1499', duration: '1 Year', subjects: [{name: 'Physics', topics: 'Electrostatics, Magnetism, Optics'}, {name: 'Chemistry', topics: 'Organic, p-Block, Coordination'}, {name: 'Mathematics', topics: 'Calculus, Vectors, 3D Geometry'}, {name: 'Biology', topics: 'Genetics, Evolution, Biotech'}], features: ['Full Syllabus', 'JEE Papers', 'NEET Questions', 'Crash Courses', 'Board Support']}
 };
 
 function showCourseDetails(course) {
 const data = courseData[course];
 const modal = document.getElementById('modal-content');
 modal.innerHTML = `
-    <h2 class="text-3xl font-bold text-emerald mb-4 text-center">${data.title}</h2>
-    <div class="text-center mb-6">
-      <span class="text-4xl font-bold text-emerald-light">${data.price}</span>
-      <span class="text-gray-600"> / ${data.duration}</span>
-    </div>
-    <div class="space-y-6">
-      <div>
-        <h3 class="text-xl font-semibold text-emerald mb-3">Subjects & Topics</h3>
-        <div class="grid md:grid-cols-2 gap-4">
-${data.subjects.map(sub => `
-            <div class="bg-emerald-light bg-opacity-10 p-4 rounded-xl">
-              <h4 class="font-bold text-emerald">${sub.name}</h4>
-              <p class="text-sm text-gray-600 mt-1">${sub.topics}</p>
-            </div>
-          `).join('')}
-        </div>
-      </div>
-      <div>
-        <h3 class="text-xl font-semibold text-emerald mb-3">Course Features</h3>
-        <ul class="space-y-2">
-${data.features.map(feat => `
-            <li class="flex items-center gap-2 text-gray-700">
-              <svg class="w-5 h-5 text-emerald" fill="currentColor" viewBox="0 0 20 20">
-                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
-              </svg>
-${feat}
-            </li>
-          `).join('')}
-        </ul>
-      </div>
-      <div class="text-center pt-4">
-        <button onclick="showQR('${course}'); document.getElementById('course-detail-modal').classList.add('hidden')"
-                class="bg-emerald text-white px-8 py-3 rounded-xl hover:bg-emerald-light transition font-semibold text-lg">
-          Enroll Now - Pay ${data.price}
-        </button>
-      </div>
-    </div>
-  `;
+<h2 class="text-2xl sm:text-3xl font-bold text-emerald mb-4 text-center">${data.title}</h2>
+<div class="text-center mb-6">
+<span class="text-3xl sm:text-4xl font-bold text-emerald-light">${data.price}</span>
+<span class="text-sm sm:text-base text-gray-600"> / ${data.duration}</span>
+</div>
+<div class="space-y-6">
+<div>
+<h3 class="text-lg sm:text-xl font-semibold text-emerald mb-3">Subjects</h3>
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+${data.subjects.map(s => `<div class="bg-emerald-light bg-opacity-10 p-3 rounded-lg hover:shadow-lg transition hover:scale-105 duration-300"><h4 class="font-bold text-emerald text-sm sm:text-base">${s.name}</h4><p class="text-xs sm:text-sm text-gray-600 mt-1">${s.topics}</p></div>`).join('')}
+</div>
+</div>
+<div>
+<h3 class="text-lg sm:text-xl font-semibold text-emerald mb-3">Features</h3>
+<ul class="space-y-2">
+${data.features.map(f => `<li class="flex items-center gap-2 text-xs sm:text-sm text-gray-700"><svg class="w-4 h-4 sm:w-5 sm:h-5 text-emerald" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>${f}</li>`).join('')}
+</ul>
+</div>
+<div class="text-center pt-4">
+<button onclick="alert('Payment feature coming soon'); document.getElementById('course-detail-modal').classList.add('hidden')"
+class="bg-emerald text-white px-6 py-3 rounded-xl hover:bg-emerald-light transition font-semibold text-sm sm:text-base hover:shadow-lg transform hover:scale-105 duration-300">
+Enroll Now
+</button>
+</div>
+</div>
+`;
 document.getElementById('course-detail-modal').classList.remove('hidden');
-}
-
-// UPI & Payment Logic
-const upiConfig = JSON.parse(localStorage.getItem('upiConfig')) || {
-pa: 'saraswati@paytm',
-pn: 'genius Coaching',
-cu: 'INR',
-courses: {
-'9th': { amount: 999, name: 'Class 9th Premium' },
-'10th': { amount: 999, name: 'Class 10th Premium' },
-'11th': { amount: 1499, name: 'Class 11th Premium' },
-'12th': { amount: 1499, name: 'Class 12th Premium' }
-  }
-};
-
-function isPurchased(course) {
-return localStorage.getItem(`purchased_${course}`) === 'true';
-}
-
-function showQR(course) {
-if (isPurchased(course)) {
-alert(`You already own ${course.toUpperCase()}!`);
-return;
-  }
-const data = upiConfig.courses[course];
-const upi = `upi://pay?pa=${upiConfig.pa}&pn=${upiConfig.pn}&am=${data.amount}&cu=${upiConfig.cu}&tn=${data.name}`;
-document.getElementById('qr-course').innerText = data.name;
-document.getElementById('qr-amount').innerText = `₹${data.amount}`;
-document.getElementById('confirm-btn').onclick = () => confirmPayment(course);
-new QRCode(document.getElementById('qr-container'), {
-text: upi,
-width: 180,
-height: 180,
-colorDark: "#047857",
-colorLight: "#ffffff"
-  });
-document.getElementById('qr-modal').classList.remove('hidden');
-}
-
-function confirmPayment(course) {
-localStorage.setItem(`purchased_${course}`, 'true');
-const purchase = {
-course: upiConfig.courses[course].name,
-amount: upiConfig.courses[course].amount,
-timestamp: Date.now(),
-method: 'UPI_QR'
-  };
-localStorage.setItem(`purchase_${Date.now()}`, JSON.stringify(purchase));
-alert('Payment Confirmed! Access Unlocked!');
-document.getElementById('qr-modal').classList.add('hidden');
-setTimeout(() => location.href = 'courses-videos.html', 1000);
 }
 </script>
 </body>
 </html>
+
