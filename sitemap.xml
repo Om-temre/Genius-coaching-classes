@@ -1,16 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-
   <url>
-    <loc>https://geniuscoching-classes-55b022.netlify.app/</loc>
+    <loc>https://geniuschoching-clasess-55b022.netlify.app/</loc>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
-
   <url>
-    <loc>https://geniuscoching-classes-55b022.netlify.app/courses-videos.html</loc>
+    <loc>https://geniuschoching-clasess-55b022.netlify.app/courses-videos.html</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
-
 </urlset>
