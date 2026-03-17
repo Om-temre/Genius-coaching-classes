@@ -7,23 +7,8 @@
   </url>
 
   <url>
-    <loc>https://geniuscoching-classes-55b022.netlify.app/index.html</loc>
-    <priority>0.8</priority>
-  </url>
-
-  <url>
-    <loc>https://geniuscoching-classes-55b022.netlify.app/login.html</loc>
-    <priority>0.8</priority>
-  </url>
-
-  <url>
-    <loc>https://geniuscoching-classes-55b022.netlify.app/admin.html</loc>
-    <priority>0.8</priority>
-  </url>
-
-  <url>
     <loc>https://geniuscoching-classes-55b022.netlify.app/courses-videos.html</loc>
     <priority>0.8</priority>
   </url>
 
-</urlset> 
+</urlset>
