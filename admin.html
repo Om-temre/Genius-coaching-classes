@@ -1,371 +1,2117 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Admin Panel | Saraswati Coaching</title>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script>
-    tailwind.config = { 
-      theme: { 
-        extend: { 
-          colors: { 'emerald': '#047857', 'emerald-light': '#10b981', 'gray-light': '#f1f5f9' }, 
-          fontFamily: { 'sans': ['Poppins', 'sans-serif'] } 
-        } 
-      } 
-    }
-  </script>
-</head>
-<body class="bg-gray-light min-h-screen">
+  <title>Admin Dashboard | Genius Coaching</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    /* ══════════════════════════════════════════
+       ROOT & THEME TOKENS
+    ══════════════════════════════════════════ */
+    :root {
+      --accent:      #10b981;
+      --accent-dark: #047857;
+      --accent-glow: rgba(16,185,129,0.18);
+      --accent-soft: rgba(16,185,129,0.08);
+      --warn:        #f59e0b;
+      --danger:      #ef4444;
+      --info:        #3b82f6;
+      --purple:      #8b5cf6;
 
-  <!-- Navbar -->
-  <nav class="bg-emerald text-white p-4 shadow-lg sticky top-0 z-50">
-    <div class="container mx-auto flex justify-between items-center">
-      <h1 class="text-xl font-bold">Admin Panel</h1>
-      <div class="flex gap-2">
-        <button onclick="showTab('users')" class="px-4 py-2 rounded bg-emerald-light hover:bg-white hover:text-emerald transition">Users</button>
-        <button onclick="showTab('content')" class="px-4 py-2 rounded bg-emerald-light hover:bg-white hover:text-emerald transition">Content</button>
-        <button onclick="showTab('logs')" class="px-4 py-2 rounded bg-emerald-light hover:bg-white hover:text-emerald transition">Login Logs</button>
-        <button onclick="logout()" class="bg-red-600 px-4 py-2 rounded hover:bg-red-700 transition">Logout</button>
+      --radius-sm:  8px;
+      --radius:     14px;
+      --radius-lg:  20px;
+      --shadow:     0 4px 24px rgba(0,0,0,0.35);
+      --shadow-lg:  0 8px 48px rgba(0,0,0,0.45);
+      --sidebar-w:  260px;
+      --topbar-h:   64px;
+      --transition: 0.22s cubic-bezier(.4,0,.2,1);
+    }
+
+    [data-theme="dark"] {
+      --bg:         #080b12;
+      --bg2:        #0e1118;
+      --surface:    #131720;
+      --surface2:   #1a1f2e;
+      --surface3:   #202637;
+      --border:     rgba(255,255,255,0.07);
+      --border2:    rgba(255,255,255,0.12);
+      --text:       #e8edf5;
+      --text2:      #9aa3b8;
+      --text3:      #5a6480;
+      --card-bg:    #131720;
+    }
+
+    [data-theme="light"] {
+      --bg:         #f0f4f8;
+      --bg2:        #e8edf5;
+      --surface:    #ffffff;
+      --surface2:   #f5f7fb;
+      --surface3:   #edf0f7;
+      --border:     rgba(0,0,0,0.08);
+      --border2:    rgba(0,0,0,0.14);
+      --text:       #111827;
+      --text2:      #4b5563;
+      --text3:      #9ca3af;
+      --card-bg:    #ffffff;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      overflow-x: hidden;
+      transition: background var(--transition), color var(--transition);
+    }
+
+    /* ══════════════════════════════════════════
+       LOADER
+    ══════════════════════════════════════════ */
+    #loader {
+      position: fixed; inset: 0; z-index: 9999;
+      background: var(--bg);
+      display: flex; align-items: center; justify-content: center;
+      flex-direction: column; gap: 20px;
+      transition: opacity 0.4s ease;
+    }
+    #loader.hide { opacity: 0; pointer-events: none; }
+
+    .loader-logo {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.6rem; font-weight: 800;
+      color: var(--accent);
+      letter-spacing: -0.02em;
+    }
+
+    .loader-bar {
+      width: 180px; height: 3px;
+      background: var(--surface2);
+      border-radius: 999px; overflow: hidden;
+    }
+    .loader-bar-fill {
+      height: 100%; width: 0;
+      background: linear-gradient(90deg, var(--accent-dark), var(--accent));
+      border-radius: 999px;
+      animation: loadFill 1.4s ease forwards;
+    }
+    @keyframes loadFill { to { width: 100%; } }
+
+    /* ══════════════════════════════════════════
+       SIDEBAR
+    ══════════════════════════════════════════ */
+    .sidebar {
+      position: fixed;
+      left: 0; top: 0; bottom: 0;
+      width: var(--sidebar-w);
+      background: var(--surface);
+      border-right: 1px solid var(--border);
+      display: flex; flex-direction: column;
+      z-index: 200;
+      transition: transform var(--transition), background var(--transition);
+      overflow: hidden;
+    }
+
+    .sidebar::before {
+      content: '';
+      position: absolute;
+      top: -80px; left: -80px;
+      width: 240px; height: 240px;
+      background: radial-gradient(circle, var(--accent-glow) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .sidebar-brand {
+      height: var(--topbar-h);
+      display: flex; align-items: center;
+      padding: 0 22px;
+      border-bottom: 1px solid var(--border);
+      gap: 10px;
+      flex-shrink: 0;
+    }
+
+    .brand-icon {
+      width: 34px; height: 34px;
+      background: linear-gradient(135deg, var(--accent-dark), var(--accent));
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.85rem; color: #fff;
+      flex-shrink: 0;
+    }
+
+    .brand-name {
+      font-family: 'Syne', sans-serif;
+      font-weight: 800; font-size: 1rem;
+      letter-spacing: -0.02em;
+      line-height: 1.1;
+    }
+    .brand-name span { color: var(--accent); }
+    .brand-sub {
+      font-size: 0.64rem;
+      color: var(--text3);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .sidebar-section {
+      padding: 20px 14px 6px;
+    }
+
+    .sidebar-section-label {
+      font-size: 0.62rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--text3);
+      padding: 0 8px;
+      margin-bottom: 6px;
+    }
+
+    .nav-item {
+      display: flex; align-items: center;
+      gap: 11px;
+      padding: 10px 12px;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      color: var(--text2);
+      font-size: 0.88rem;
+      font-weight: 500;
+      transition: all var(--transition);
+      position: relative;
+      border: 1px solid transparent;
+      text-decoration: none;
+      user-select: none;
+    }
+
+    .nav-item:hover {
+      background: var(--surface2);
+      color: var(--text);
+    }
+
+    .nav-item.active {
+      background: var(--accent-soft);
+      color: var(--accent);
+      border-color: rgba(16,185,129,0.2);
+    }
+
+    .nav-item.active .nav-icon { color: var(--accent); }
+
+    .nav-icon {
+      width: 18px;
+      text-align: center;
+      font-size: 0.9rem;
+      flex-shrink: 0;
+      color: var(--text3);
+      transition: color var(--transition);
+    }
+
+    .nav-item:hover .nav-icon { color: var(--accent); }
+
+    .nav-badge {
+      margin-left: auto;
+      background: var(--accent);
+      color: #fff;
+      font-size: 0.62rem;
+      font-weight: 700;
+      padding: 2px 7px;
+      border-radius: 999px;
+      min-width: 20px;
+      text-align: center;
+    }
+
+    .nav-badge.warn { background: var(--warn); }
+    .nav-badge.danger { background: var(--danger); }
+
+    .sidebar-footer {
+      margin-top: auto;
+      padding: 14px;
+      border-top: 1px solid var(--border);
+    }
+
+    .admin-card {
+      display: flex; align-items: center; gap: 10px;
+      padding: 10px 12px;
+      background: var(--surface2);
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border);
+    }
+
+    .admin-avatar {
+      width: 36px; height: 36px;
+      border-radius: 10px;
+      background: linear-gradient(135deg, var(--accent-dark), var(--accent));
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.85rem; color: #fff; font-weight: 700;
+      flex-shrink: 0;
+    }
+
+    .admin-name { font-size: 0.82rem; font-weight: 600; line-height: 1.2; }
+    .admin-role { font-size: 0.68rem; color: var(--accent); font-weight: 500; }
+
+    /* ══════════════════════════════════════════
+       TOPBAR
+    ══════════════════════════════════════════ */
+    .topbar {
+      position: fixed;
+      top: 0;
+      left: var(--sidebar-w);
+      right: 0;
+      height: var(--topbar-h);
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      display: flex; align-items: center;
+      padding: 0 28px;
+      gap: 16px;
+      z-index: 100;
+      transition: left var(--transition), background var(--transition);
+    }
+
+    .topbar-title {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.15rem;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+    }
+
+    .topbar-title span { color: var(--text3); font-weight: 400; font-size: 0.85rem; margin-left: 6px; font-family: 'DM Sans', sans-serif; }
+
+    .topbar-spacer { flex: 1; }
+
+    .topbar-search {
+      display: flex; align-items: center; gap: 8px;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 7px 14px;
+      transition: border-color var(--transition);
+    }
+
+    .topbar-search:focus-within { border-color: var(--accent); }
+
+    .topbar-search i { color: var(--text3); font-size: 0.82rem; }
+
+    .topbar-search input {
+      background: none; border: none; outline: none;
+      color: var(--text); font-size: 0.84rem;
+      font-family: 'DM Sans', sans-serif;
+      width: 180px;
+    }
+
+    .topbar-search input::placeholder { color: var(--text3); }
+
+    .topbar-btn {
+      width: 38px; height: 38px;
+      border-radius: var(--radius-sm);
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; color: var(--text2);
+      font-size: 0.9rem;
+      transition: all var(--transition);
+      position: relative;
+    }
+
+    .topbar-btn:hover {
+      background: var(--accent-soft);
+      border-color: rgba(16,185,129,0.25);
+      color: var(--accent);
+    }
+
+    .notif-dot {
+      position: absolute; top: 6px; right: 6px;
+      width: 7px; height: 7px;
+      background: var(--danger);
+      border-radius: 50%;
+      border: 1.5px solid var(--surface);
+    }
+
+    .mobile-menu-btn {
+      display: none;
+      width: 38px; height: 38px;
+      border-radius: var(--radius-sm);
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      align-items: center; justify-content: center;
+      cursor: pointer; color: var(--text2);
+      font-size: 1rem;
+    }
+
+    /* ══════════════════════════════════════════
+       MAIN CONTENT
+    ══════════════════════════════════════════ */
+    .main {
+      margin-left: var(--sidebar-w);
+      margin-top: var(--topbar-h);
+      padding: 28px;
+      min-height: calc(100vh - var(--topbar-h));
+      transition: margin var(--transition);
+    }
+
+    .page { display: none; }
+    .page.active {
+      display: block;
+      animation: pageIn 0.35s ease both;
+    }
+    @keyframes pageIn {
+      from { opacity: 0; transform: translateY(12px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ══════════════════════════════════════════
+       SECTION HEADER
+    ══════════════════════════════════════════ */
+    .section-header {
+      display: flex; align-items: flex-end;
+      justify-content: space-between;
+      margin-bottom: 24px;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .section-title {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.45rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+    }
+
+    .section-sub {
+      font-size: 0.82rem;
+      color: var(--text3);
+      margin-top: 3px;
+    }
+
+    .btn {
+      display: inline-flex; align-items: center; gap: 7px;
+      padding: 9px 18px;
+      border-radius: var(--radius-sm);
+      font-size: 0.84rem;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      transition: all var(--transition);
+      font-family: 'DM Sans', sans-serif;
+      text-decoration: none;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--accent-dark), var(--accent));
+      color: #fff;
+      box-shadow: 0 4px 16px rgba(16,185,129,0.3);
+    }
+    .btn-primary:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 24px rgba(16,185,129,0.4);
+    }
+
+    .btn-outline {
+      background: transparent;
+      border: 1px solid var(--border2);
+      color: var(--text2);
+    }
+    .btn-outline:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+      background: var(--accent-soft);
+    }
+
+    .btn-danger {
+      background: rgba(239,68,68,0.12);
+      border: 1px solid rgba(239,68,68,0.25);
+      color: var(--danger);
+    }
+    .btn-danger:hover { background: rgba(239,68,68,0.2); }
+
+    .btn-warn {
+      background: rgba(245,158,11,0.1);
+      border: 1px solid rgba(245,158,11,0.25);
+      color: var(--warn);
+    }
+    .btn-warn:hover { background: rgba(245,158,11,0.2); }
+
+    .btn-sm { padding: 6px 12px; font-size: 0.78rem; }
+    .btn-icon { padding: 8px; width: 34px; height: 34px; justify-content: center; }
+
+    /* ══════════════════════════════════════════
+       STAT CARDS
+    ══════════════════════════════════════════ */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+      gap: 18px;
+      margin-bottom: 28px;
+    }
+
+    .stat-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 22px 20px;
+      cursor: default;
+      transition: all var(--transition);
+      animation: cardIn 0.5s ease both;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .stat-card::after {
+      content: '';
+      position: absolute;
+      bottom: -30px; right: -30px;
+      width: 100px; height: 100px;
+      border-radius: 50%;
+      opacity: 0.06;
+      transition: transform 0.4s ease;
+    }
+
+    .stat-card:hover { transform: translateY(-3px); box-shadow: var(--shadow); }
+    .stat-card:hover::after { transform: scale(1.4); }
+
+    .stat-card.green::after  { background: var(--accent); }
+    .stat-card.blue::after   { background: var(--info); }
+    .stat-card.warn::after   { background: var(--warn); }
+    .stat-card.purple::after { background: var(--purple); }
+
+    .stat-top {
+      display: flex; align-items: center;
+      justify-content: space-between;
+      margin-bottom: 14px;
+    }
+
+    .stat-icon {
+      width: 42px; height: 42px;
+      border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.05rem;
+    }
+
+    .stat-icon.green  { background: rgba(16,185,129,0.12); color: var(--accent); }
+    .stat-icon.blue   { background: rgba(59,130,246,0.12); color: var(--info); }
+    .stat-icon.warn   { background: rgba(245,158,11,0.12); color: var(--warn); }
+    .stat-icon.purple { background: rgba(139,92,246,0.12); color: var(--purple); }
+
+    .stat-change {
+      font-size: 0.7rem;
+      font-weight: 600;
+      padding: 3px 8px;
+      border-radius: 999px;
+    }
+    .stat-change.up   { background: rgba(16,185,129,0.1);  color: var(--accent); }
+    .stat-change.down { background: rgba(239,68,68,0.1);   color: var(--danger); }
+
+    .stat-val {
+      font-family: 'Syne', sans-serif;
+      font-size: 2rem; font-weight: 800;
+      letter-spacing: -0.03em;
+      line-height: 1;
+      margin-bottom: 4px;
+    }
+
+    .stat-label { font-size: 0.8rem; color: var(--text3); font-weight: 500; }
+
+    @keyframes cardIn {
+      from { opacity: 0; transform: translateY(16px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ══════════════════════════════════════════
+       CARDS / PANELS
+    ══════════════════════════════════════════ */
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      transition: background var(--transition), border-color var(--transition);
+    }
+
+    .card-header {
+      padding: 18px 22px;
+      border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 12px;
+    }
+
+    .card-title {
+      font-family: 'Syne', sans-serif;
+      font-size: 0.95rem;
+      font-weight: 700;
+    }
+
+    .card-body { padding: 22px; }
+
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+    .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; }
+
+    /* ══════════════════════════════════════════
+       FORM ELEMENTS
+    ══════════════════════════════════════════ */
+    .form-group { margin-bottom: 16px; }
+
+    .form-label {
+      display: block;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--text2);
+      margin-bottom: 7px;
+      letter-spacing: 0.02em;
+    }
+
+    .form-label .required { color: var(--danger); margin-left: 2px; }
+
+    .form-input,
+    .form-select,
+    .form-textarea {
+      width: 100%;
+      background: var(--surface2);
+      border: 1px solid var(--border2);
+      border-radius: var(--radius-sm);
+      padding: 10px 14px;
+      font-size: 0.875rem;
+      font-family: 'DM Sans', sans-serif;
+      color: var(--text);
+      outline: none;
+      transition: border-color var(--transition), box-shadow var(--transition);
+    }
+
+    .form-textarea { min-height: 90px; resize: vertical; }
+
+    .form-input:focus,
+    .form-select:focus,
+    .form-textarea:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(16,185,129,0.12);
+    }
+
+    .form-input::placeholder { color: var(--text3); }
+    .form-select option { background: var(--surface); }
+
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+
+    /* ══════════════════════════════════════════
+       TABLE
+    ══════════════════════════════════════════ */
+    .table-wrap { overflow-x: auto; }
+
+    table { width: 100%; border-collapse: collapse; }
+
+    thead tr {
+      border-bottom: 1px solid var(--border);
+    }
+
+    th {
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text3);
+      padding: 10px 16px;
+      text-align: left;
+      white-space: nowrap;
+    }
+
+    td {
+      padding: 14px 16px;
+      font-size: 0.85rem;
+      color: var(--text2);
+      border-bottom: 1px solid var(--border);
+      transition: background var(--transition);
+    }
+
+    tr:last-child td { border-bottom: none; }
+
+    tbody tr {
+      transition: background var(--transition);
+      cursor: default;
+    }
+    tbody tr:hover td { background: var(--surface2); }
+
+    .badge {
+      display: inline-flex; align-items: center; gap: 4px;
+      padding: 3px 10px;
+      border-radius: 999px;
+      font-size: 0.7rem;
+      font-weight: 600;
+    }
+
+    .badge-green  { background: rgba(16,185,129,0.12); color: var(--accent); }
+    .badge-blue   { background: rgba(59,130,246,0.12);  color: var(--info); }
+    .badge-warn   { background: rgba(245,158,11,0.12);  color: var(--warn); }
+    .badge-purple { background: rgba(139,92,246,0.12);  color: var(--purple); }
+    .badge-danger { background: rgba(239,68,68,0.12);   color: var(--danger); }
+
+    .td-actions { display: flex; gap: 6px; align-items: center; }
+
+    /* ══════════════════════════════════════════
+       FILTER BAR
+    ══════════════════════════════════════════ */
+    .filter-bar {
+      display: flex; align-items: center; gap: 10px;
+      margin-bottom: 18px; flex-wrap: wrap;
+    }
+
+    .filter-select {
+      background: var(--surface2);
+      border: 1px solid var(--border2);
+      border-radius: var(--radius-sm);
+      padding: 7px 12px;
+      font-size: 0.82rem;
+      color: var(--text2);
+      outline: none;
+      font-family: 'DM Sans', sans-serif;
+      cursor: pointer;
+    }
+    .filter-select:focus { border-color: var(--accent); }
+    .filter-select option { background: var(--surface); }
+
+    .search-input-wrap {
+      flex: 1; min-width: 160px;
+      display: flex; align-items: center; gap: 8px;
+      background: var(--surface2);
+      border: 1px solid var(--border2);
+      border-radius: var(--radius-sm);
+      padding: 7px 12px;
+    }
+    .search-input-wrap i { color: var(--text3); font-size: 0.8rem; }
+    .search-input-wrap input {
+      background: none; border: none; outline: none;
+      font-size: 0.82rem; color: var(--text);
+      font-family: 'DM Sans', sans-serif; width: 100%;
+    }
+    .search-input-wrap input::placeholder { color: var(--text3); }
+
+    /* ══════════════════════════════════════════
+       CHART CARDS
+    ══════════════════════════════════════════ */
+    .chart-wrap {
+      position: relative;
+      height: 240px;
+    }
+
+    /* ══════════════════════════════════════════
+       TOAST
+    ══════════════════════════════════════════ */
+    #toast-container {
+      position: fixed; bottom: 24px; right: 24px;
+      z-index: 9000; display: flex; flex-direction: column; gap: 10px;
+    }
+
+    .toast {
+      display: flex; align-items: center; gap: 12px;
+      background: var(--surface);
+      border: 1px solid var(--border2);
+      border-radius: var(--radius);
+      padding: 12px 18px;
+      box-shadow: var(--shadow-lg);
+      min-width: 280px;
+      animation: toastIn 0.3s ease both;
+      font-size: 0.84rem;
+    }
+
+    .toast.success { border-left: 3px solid var(--accent); }
+    .toast.error   { border-left: 3px solid var(--danger); }
+    .toast.info    { border-left: 3px solid var(--info); }
+
+    .toast-icon { font-size: 1rem; flex-shrink: 0; }
+    .toast.success .toast-icon { color: var(--accent); }
+    .toast.error   .toast-icon { color: var(--danger); }
+    .toast.info    .toast-icon { color: var(--info); }
+
+    @keyframes toastIn {
+      from { opacity: 0; transform: translateX(20px); }
+      to   { opacity: 1; transform: translateX(0); }
+    }
+    @keyframes toastOut {
+      from { opacity: 1; transform: translateX(0); }
+      to   { opacity: 0; transform: translateX(20px); }
+    }
+
+    /* ══════════════════════════════════════════
+       MODAL
+    ══════════════════════════════════════════ */
+    .modal-overlay {
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,0.65);
+      backdrop-filter: blur(4px);
+      z-index: 500; display: none;
+      align-items: center; justify-content: center;
+      padding: 20px;
+    }
+    .modal-overlay.open { display: flex; }
+
+    .modal {
+      background: var(--surface);
+      border: 1px solid var(--border2);
+      border-radius: var(--radius-lg);
+      width: 100%; max-width: 520px;
+      animation: modalIn 0.3s ease both;
+      overflow: hidden;
+    }
+    @keyframes modalIn {
+      from { opacity: 0; transform: scale(0.94) translateY(16px); }
+      to   { opacity: 1; transform: scale(1) translateY(0); }
+    }
+
+    .modal-header {
+      padding: 20px 24px;
+      border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: space-between;
+    }
+
+    .modal-title {
+      font-family: 'Syne', sans-serif;
+      font-weight: 700; font-size: 1rem;
+    }
+
+    .modal-close {
+      width: 30px; height: 30px;
+      border-radius: 8px;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; color: var(--text2);
+      font-size: 0.8rem;
+      transition: all var(--transition);
+    }
+    .modal-close:hover { background: rgba(239,68,68,0.1); color: var(--danger); }
+
+    .modal-body { padding: 24px; }
+    .modal-footer {
+      padding: 16px 24px;
+      border-top: 1px solid var(--border);
+      display: flex; gap: 10px; justify-content: flex-end;
+    }
+
+    /* ══════════════════════════════════════════
+       ANALYTICS EXTRAS
+    ══════════════════════════════════════════ */
+    .mini-stat {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 14px 16px;
+      display: flex; align-items: center; gap: 12px;
+    }
+
+    .mini-stat-icon {
+      width: 36px; height: 36px;
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.88rem; flex-shrink: 0;
+    }
+
+    .mini-stat-val {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.2rem; font-weight: 700;
+    }
+    .mini-stat-label { font-size: 0.74rem; color: var(--text3); }
+
+    /* ══════════════════════════════════════════
+       ACTIVITY FEED
+    ══════════════════════════════════════════ */
+    .activity-item {
+      display: flex; gap: 12px;
+      padding: 12px 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .activity-item:last-child { border-bottom: none; }
+
+    .activity-dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      margin-top: 6px; flex-shrink: 0;
+    }
+
+    .activity-text { font-size: 0.82rem; line-height: 1.5; }
+    .activity-time { font-size: 0.72rem; color: var(--text3); margin-top: 2px; }
+
+    /* ══════════════════════════════════════════
+       USER TABLE AVATAR
+    ══════════════════════════════════════════ */
+    .user-cell {
+      display: flex; align-items: center; gap: 10px;
+    }
+
+    .user-avatar {
+      width: 32px; height: 32px;
+      border-radius: 8px;
+      font-size: 0.72rem; font-weight: 700;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0; color: #fff;
+    }
+
+    .user-name { font-size: 0.85rem; font-weight: 500; color: var(--text); }
+    .user-email { font-size: 0.72rem; color: var(--text3); }
+
+    /* ══════════════════════════════════════════
+       SETTINGS
+    ══════════════════════════════════════════ */
+    .settings-row {
+      display: flex; align-items: center;
+      justify-content: space-between;
+      padding: 16px 0;
+      border-bottom: 1px solid var(--border);
+      gap: 20px;
+    }
+    .settings-row:last-child { border-bottom: none; }
+    .settings-label { font-size: 0.88rem; font-weight: 500; }
+    .settings-desc  { font-size: 0.76rem; color: var(--text3); margin-top: 2px; }
+
+    .toggle {
+      position: relative; width: 42px; height: 24px;
+      flex-shrink: 0; cursor: pointer;
+    }
+    .toggle input { opacity: 0; width: 0; height: 0; }
+    .toggle-slider {
+      position: absolute; inset: 0;
+      background: var(--surface3);
+      border-radius: 999px;
+      transition: background 0.2s;
+    }
+    .toggle-slider::before {
+      content: '';
+      position: absolute;
+      width: 18px; height: 18px;
+      left: 3px; bottom: 3px;
+      background: white;
+      border-radius: 50%;
+      transition: transform 0.2s;
+    }
+    .toggle input:checked + .toggle-slider { background: var(--accent); }
+    .toggle input:checked + .toggle-slider::before { transform: translateX(18px); }
+
+    /* ══════════════════════════════════════════
+       RESPONSIVE
+    ══════════════════════════════════════════ */
+    .sidebar-overlay {
+      display: none;
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,0.5);
+      z-index: 199;
+    }
+
+    @media (max-width: 900px) {
+      .sidebar {
+        transform: translateX(-100%);
+      }
+      .sidebar.open {
+        transform: translateX(0);
+      }
+      .sidebar-overlay.open { display: block; }
+
+      .topbar { left: 0; }
+      .main   { margin-left: 0; }
+      .mobile-menu-btn { display: flex; }
+      .topbar-search { display: none; }
+      .grid-2 { grid-template-columns: 1fr; }
+      .grid-3 { grid-template-columns: 1fr; }
+      .form-row { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 560px) {
+      .stats-grid { grid-template-columns: 1fr 1fr; }
+      .main { padding: 16px; }
+    }
+
+    /* Scrollbar */
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: var(--accent); }
+  </style>
+</head>
+<body>
+
+  <!-- ────────── LOADER ────────── -->
+  <div id="loader">
+    <div class="loader-logo">⚡ Genius Coaching</div>
+    <div class="loader-bar"><div class="loader-bar-fill"></div></div>
+  </div>
+
+  <!-- ────────── SIDEBAR OVERLAY ────────── -->
+  <div class="sidebar-overlay" id="sidebar-overlay" onclick="closeSidebar()"></div>
+
+  <!-- ════════════════════════════
+       SIDEBAR
+  ═════════════════════════════ -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-brand">
+      <div class="brand-icon"><i class="fas fa-graduation-cap"></i></div>
+      <div>
+        <div class="brand-name">Genius<span>.</span></div>
+        <div class="brand-sub">Admin Panel</div>
       </div>
     </div>
-  </nav>
 
-  <div class="container mx-auto p-6">
+    <div class="sidebar-section">
+      <div class="sidebar-section-label">Main</div>
+      <div class="nav-item active" onclick="navigate('dashboard', this)">
+        <i class="nav-icon fas fa-chart-pie"></i> Dashboard
+      </div>
+      <div class="nav-item" onclick="navigate('add-content', this)">
+        <i class="nav-icon fas fa-plus-circle"></i> Add Course / Video
+        <span class="nav-badge">New</span>
+      </div>
+      <div class="nav-item" onclick="navigate('manage', this)">
+        <i class="nav-icon fas fa-film"></i> Manage Content
+      </div>
+    </div>
 
-    <!-- USER MANAGEMENT -->
-    <div id="users-tab" class="bg-white rounded-xl shadow-lg p-6 mb-6">
-      <div class="flex justify-between items-center mb-6">
-        <h2 class="text-2xl font-bold text-emerald">User Management</h2>
-        <button onclick="showCreateUser()" class="bg-emerald text-white px-4 py-2 rounded hover:bg-emerald-light text-sm">
-          + Create User
+    <div class="sidebar-section">
+      <div class="sidebar-section-label">People</div>
+      <div class="nav-item" onclick="navigate('users', this)">
+        <i class="nav-icon fas fa-users"></i> Students / Users
+        <span class="nav-badge warn" id="new-users-badge">3</span>
+      </div>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-section-label">Insights</div>
+      <div class="nav-item" onclick="navigate('analytics', this)">
+        <i class="nav-icon fas fa-chart-line"></i> Analytics
+      </div>
+      <div class="nav-item" onclick="navigate('settings', this)">
+        <i class="nav-icon fas fa-sliders-h"></i> Settings
+      </div>
+    </div>
+
+    <div class="sidebar-footer">
+      <div class="admin-card">
+        <div class="admin-avatar">A</div>
+        <div>
+          <div class="admin-name">Admin User</div>
+          <div class="admin-role">Super Admin</div>
+        </div>
+        <i class="fas fa-ellipsis-v" style="margin-left:auto; color:var(--text3); font-size:.8rem; cursor:pointer;"></i>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ════════════════════════════
+       TOPBAR
+  ═════════════════════════════ -->
+  <header class="topbar" id="topbar">
+    <button class="mobile-menu-btn" onclick="toggleSidebar()">
+      <i class="fas fa-bars"></i>
+    </button>
+
+    <div class="topbar-title" id="topbar-title">
+      Dashboard <span>/ Overview</span>
+    </div>
+
+    <div class="topbar-spacer"></div>
+
+    <div class="topbar-search">
+      <i class="fas fa-search"></i>
+      <input type="text" placeholder="Search anything..." />
+    </div>
+
+    <button class="topbar-btn" title="Notifications">
+      <i class="fas fa-bell"></i>
+      <span class="notif-dot"></span>
+    </button>
+
+    <button class="topbar-btn" id="theme-toggle" title="Toggle Theme" onclick="toggleTheme()">
+      <i class="fas fa-moon" id="theme-icon"></i>
+    </button>
+
+    <div class="admin-avatar" style="width:38px;height:38px;border-radius:10px;font-size:.82rem;cursor:pointer;">A</div>
+  </header>
+
+  <!-- ════════════════════════════
+       MAIN
+  ═════════════════════════════ -->
+  <main class="main">
+
+    <!-- ────────── DASHBOARD ────────── -->
+    <div class="page active" id="page-dashboard">
+
+      <div class="section-header">
+        <div>
+          <div class="section-title">Overview</div>
+          <div class="section-sub">Welcome back, Admin! Here's what's happening today.</div>
+        </div>
+        <button class="btn btn-primary btn-sm" onclick="navigate('add-content', document.querySelector('[onclick*=add-content]'))">
+          <i class="fas fa-plus"></i> Add Video
         </button>
       </div>
 
-      <input type="text" id="search-user" placeholder="Search by name or phone..." class="w-full p-3 border rounded-lg mb-4">
-
-      <div class="overflow-x-auto">
-        <table class="w-full text-left border-collapse">
-          <thead>
-            <tr class="bg-emerald-light text-white">
-              <th class="p-3 rounded-tl-lg">Name</th>
-              <th class="p-3">Phone</th>
-              <th class="p-3">Role</th>
-              <th class="p-3 rounded-tr-lg">Actions</th>
-            </tr>
-          </thead>
-          <tbody id="users-table"></tbody>
-        </table>
-      </div>
-      <p id="no-users" class="text-center text-gray-500 py-8 hidden">No users found.</p>
-    </div>
-
-    <!-- CONTENT MANAGEMENT -->
-    <div id="content-tab" class="grid md:grid-cols-2 gap-6 hidden">
-      <!-- Prices -->
-      <div class="bg-white p-6 rounded-xl shadow">
-        <h2 class="text-xl font-bold text-emerald mb-4">Course Prices</h2>
-        <div id="prices-container" class="space-y-3"></div>
-        <button onclick="savePrices()" class="mt-4 w-full bg-emerald text-white py-2 rounded hover:bg-emerald-light">Save Prices</button>
-      </div>
-
-      <!-- Upload Video -->
-      <div class="bg-white p-6 rounded-xl shadow">
-        <h2 class="text-xl font-bold text-emerald mb-4">Upload Video</h2>
-        <input type="text" id="video-title" placeholder="Title" class="w-full p-2 border mb-2 rounded">
-        <input type="text" id="video-url" placeholder="YouTube URL" class="w-full p-2 border mb-2 rounded">
-        <select id="video-class" class="w-full p-2 border mb-2 rounded">
-          <option>9th</option><option>10th</option><option>11th</option><option>12th</option>
-        </select>
-        <button onclick="addVideo()" class="w-full bg-emerald text-white py-2 rounded hover:bg-emerald-light">Add Video</button>
-      </div>
-
-      <!-- Upload File -->
-      <div class="bg-white p-6 rounded-xl shadow">
-        <h2 class="text-xl font-bold text-emerald mb-4">Upload Study Material</h2>
-        <input type="text" id="file-title" placeholder="File Name" class="w-full p-2 border mb-2 rounded">
-        <input type="url" id="file-url" placeholder="Google Drive / URL" class="w-full p-2 border mb-2 rounded">
-        <select id="file-type" class="w-full p-2 border mb-2 rounded">
-          <option>Notes</option><option>Assignment</option><option>Test Paper</option><option>Solution</option>
-        </select>
-        <button onclick="addFile()" class="w-full bg-emerald text-white py-2 rounded hover:bg-emerald-light">Upload</button>
-      </div>
-    </div>
-
-    <!-- LOGIN ACTIVITY LOG -->
-    <div id="logs-tab" class="bg-white rounded-xl shadow-lg p-6 mb-6 hidden">
-      <div class="flex justify-between items-center mb-6">
-        <h2 class="text-2xl font-bold text-emerald">Login Activity Log</h2>
-        <div class="flex gap-2">
-          <input type="text" id="search-log" placeholder="Search by phone..." class="px-3 py-2 border rounded text-sm">
-          <button onclick="exportLogs()" class="bg-emerald text-white px-3 py-2 rounded text-sm hover:bg-emerald-light">Export CSV</button>
-          <button onclick="clearLogs()" class="bg-red-600 text-white px-3 py-2 rounded text-sm hover:bg-red-700">Clear All</button>
+      <!-- Stat Cards -->
+      <div class="stats-grid">
+        <div class="stat-card green" style="animation-delay:.05s">
+          <div class="stat-top">
+            <div class="stat-icon green"><i class="fas fa-users"></i></div>
+            <span class="stat-change up">↑ 12%</span>
+          </div>
+          <div class="stat-val" id="stat-students">0</div>
+          <div class="stat-label">Total Students</div>
+        </div>
+        <div class="stat-card blue" style="animation-delay:.1s">
+          <div class="stat-top">
+            <div class="stat-icon blue"><i class="fas fa-play-circle"></i></div>
+            <span class="stat-change up">↑ 8%</span>
+          </div>
+          <div class="stat-val" id="stat-videos">0</div>
+          <div class="stat-label">Total Videos</div>
+        </div>
+        <div class="stat-card warn" style="animation-delay:.15s">
+          <div class="stat-top">
+            <div class="stat-icon warn"><i class="fas fa-book-open"></i></div>
+            <span class="stat-change up">↑ 4%</span>
+          </div>
+          <div class="stat-val" id="stat-classes">0</div>
+          <div class="stat-label">Total Classes</div>
+        </div>
+        <div class="stat-card purple" style="animation-delay:.2s">
+          <div class="stat-top">
+            <div class="stat-icon purple"><i class="fas fa-eye"></i></div>
+            <span class="stat-change down">↓ 3%</span>
+          </div>
+          <div class="stat-val" id="stat-views">0</div>
+          <div class="stat-label">Total Views</div>
         </div>
       </div>
 
-      <div class="overflow-x-auto">
-        <table class="w-full text-left border-collapse">
-          <thead>
-            <tr class="bg-emerald-light text-white">
-              <th class="p-3 rounded-tl-lg">Phone</th>
-              <th class="p-3">Name</th>
-              <th class="p-3">Role</th>
-              <th class="p-3">Time</th>
-            </tr>
-          </thead>
-          <tbody id="logs-table"></tbody>
-        </table>
-      </div>
-      <p id="no-logs" class="text-center text-gray-500 py-8 hidden">No login activity.</p>
-    </div>
-
-    <!-- CREATE USER MODAL -->
-    <div id="create-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center z-50 p-4">
-      <div class="bg-white rounded-xl p-6 max-w-md w-full">
-        <h3 class="text-xl font-bold text-emerald mb-4">Create New User</h3>
-        <input type="text" id="new-name" placeholder="Full Name" class="w-full p-2 border rounded mb-3">
-        <input type="tel" id="new-phone" placeholder="+91 9876543210" class="w-full p-2 border rounded mb-3">
-        <input type="password" id="new-pass" placeholder="Password" class="w-full p-2 border rounded mb-3">
-        <select id="new-role" class="w-full p-2 border rounded mb-4">
-          <option value="student">Student</option>
-          <option value="admin">Admin</option>
-        </select>
-        <div class="flex gap-2">
-          <button onclick="createUser()" class="flex-1 bg-emerald text-white py-2 rounded hover:bg-emerald-light">Create</button>
-          <button onclick="closeModal()" class="flex-1 bg-gray-300 py-2 rounded hover:bg-gray-400">Cancel</button>
+      <!-- Charts row -->
+      <div class="grid-2" style="margin-bottom:20px;">
+        <div class="card">
+          <div class="card-header">
+            <span class="card-title">Weekly Enrollments</span>
+            <span class="badge badge-green">Live</span>
+          </div>
+          <div class="card-body">
+            <div class="chart-wrap"><canvas id="enroll-chart"></canvas></div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header">
+            <span class="card-title">Video Views by Class</span>
+          </div>
+          <div class="card-body">
+            <div class="chart-wrap"><canvas id="views-chart"></canvas></div>
+          </div>
         </div>
       </div>
-    </div>
 
-    <!-- Alert -->
-    <div id="admin-alert" class="hidden fixed bottom-4 right-4 bg-emerald text-white p-4 rounded shadow-lg text-sm"></div>
+      <!-- Recent + Activity -->
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-header">
+            <span class="card-title">Recent Videos</span>
+            <button class="btn btn-outline btn-sm" onclick="navigate('manage', document.querySelector('[onclick*=manage]'))">View all</button>
+          </div>
+          <div class="card-body" style="padding:0;">
+            <div class="table-wrap">
+              <table>
+                <thead><tr>
+                  <th>Title</th><th>Class</th><th>Views</th>
+                </tr></thead>
+                <tbody id="recent-videos-tbody"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header"><span class="card-title">Recent Activity</span></div>
+          <div class="card-body" id="activity-feed" style="padding:12px 22px;"></div>
+        </div>
+      </div>
+    </div><!-- /dashboard -->
+
+    <!-- ────────── ADD CONTENT ────────── -->
+    <div class="page" id="page-add-content">
+      <div class="section-header">
+        <div>
+          <div class="section-title">Add Course / Video</div>
+          <div class="section-sub">Upload a new YouTube video and assign it to a class.</div>
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <!-- Add Video Form -->
+        <div class="card">
+          <div class="card-header"><span class="card-title"><i class="fas fa-video" style="color:var(--accent);margin-right:8px;"></i>Add New Video</span></div>
+          <div class="card-body">
+            <div class="form-group">
+              <label class="form-label">Video Title <span class="required">*</span></label>
+              <input class="form-input" id="v-title" type="text" placeholder="e.g. Introduction to Algebra" />
+            </div>
+            <div class="form-group">
+              <label class="form-label">YouTube URL <span class="required">*</span></label>
+              <input class="form-input" id="v-url" type="url" placeholder="https://www.youtube.com/watch?v=..." />
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label">Assign to Class <span class="required">*</span></label>
+                <select class="form-select" id="v-class">
+                  <option value="">Select Class</option>
+                  <option>Class 1</option><option>Class 2</option><option>Class 3</option>
+                  <option>Class 4</option><option>Class 5</option><option>Class 6</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Subject</label>
+                <select class="form-select" id="v-subject">
+                  <option>Mathematics</option><option>Science</option><option>English</option>
+                  <option>History</option><option>Physics</option><option>Chemistry</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Description</label>
+              <textarea class="form-textarea" id="v-desc" placeholder="Brief description of what this class covers..."></textarea>
+            </div>
+            <button class="btn btn-primary" style="width:100%;" onclick="addVideo()">
+              <i class="fas fa-plus-circle"></i> Add Video
+            </button>
+          </div>
+        </div>
+
+        <!-- Preview + Tips -->
+        <div style="display:flex;flex-direction:column;gap:18px;">
+          <div class="card">
+            <div class="card-header"><span class="card-title">Video Preview</span></div>
+            <div class="card-body">
+              <div id="video-preview" style="aspect-ratio:16/9;background:var(--surface2);border-radius:var(--radius-sm);display:flex;align-items:center;justify-content:center;color:var(--text3);font-size:.82rem;overflow:hidden;">
+                <div style="text-align:center;">
+                  <i class="fas fa-play-circle" style="font-size:2rem;margin-bottom:8px;display:block;color:var(--text3);"></i>
+                  Enter a YouTube URL to preview
+                </div>
+              </div>
+              <button class="btn btn-outline" style="width:100%;margin-top:12px;" onclick="previewVideo()">
+                <i class="fas fa-eye"></i> Preview Video
+              </button>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-header"><span class="card-title">💡 Quick Tips</span></div>
+            <div class="card-body" style="font-size:.82rem;color:var(--text2);line-height:1.7;">
+              <p style="margin-bottom:8px;">• Use clear, descriptive titles like <strong>"Class 3 – Quadratic Equations"</strong></p>
+              <p style="margin-bottom:8px;">• Paste the full YouTube URL (watch?v= or youtu.be/)</p>
+              <p style="margin-bottom:8px;">• Assign videos in order so students see a logical sequence</p>
+              <p>• Add a description so students know what to expect</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div><!-- /add-content -->
+
+    <!-- ────────── MANAGE CONTENT ────────── -->
+    <div class="page" id="page-manage">
+      <div class="section-header">
+        <div>
+          <div class="section-title">Manage Content</div>
+          <div class="section-sub">View, edit or delete uploaded videos.</div>
+        </div>
+        <button class="btn btn-primary btn-sm" onclick="navigate('add-content', document.querySelector('[onclick*=add-content]'))">
+          <i class="fas fa-plus"></i> Add Video
+        </button>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">All Videos</span>
+          <span class="badge badge-green" id="video-count-badge">0 videos</span>
+        </div>
+        <div class="card-body" style="padding-bottom:0;">
+          <div class="filter-bar">
+            <div class="search-input-wrap">
+              <i class="fas fa-search"></i>
+              <input type="text" placeholder="Search videos..." id="search-videos" oninput="renderVideosTable()" />
+            </div>
+            <select class="filter-select" id="filter-class" onchange="renderVideosTable()">
+              <option value="">All Classes</option>
+              <option>Class 1</option><option>Class 2</option><option>Class 3</option>
+              <option>Class 4</option><option>Class 5</option><option>Class 6</option>
+            </select>
+            <select class="filter-select" id="filter-subject" onchange="renderVideosTable()">
+              <option value="">All Subjects</option>
+              <option>Mathematics</option><option>Science</option><option>English</option>
+              <option>History</option><option>Physics</option><option>Chemistry</option>
+            </select>
+          </div>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr>
+              <th>#</th><th>Title</th><th>Class</th><th>Subject</th><th>Views</th><th>Added</th><th>Actions</th>
+            </tr></thead>
+            <tbody id="videos-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div><!-- /manage -->
+
+    <!-- ────────── USERS ────────── -->
+    <div class="page" id="page-users">
+      <div class="section-header">
+        <div>
+          <div class="section-title">Students & Users</div>
+          <div class="section-sub">Manage enrolled students and their progress.</div>
+        </div>
+        <button class="btn btn-primary btn-sm" onclick="openAddUserModal()">
+          <i class="fas fa-user-plus"></i> Add Student
+        </button>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">All Students</span>
+          <span class="badge badge-blue" id="user-count-badge">0 students</span>
+        </div>
+        <div class="card-body" style="padding-bottom:0;">
+          <div class="filter-bar">
+            <div class="search-input-wrap">
+              <i class="fas fa-search"></i>
+              <input type="text" placeholder="Search students..." id="search-users" oninput="renderUsersTable()" />
+            </div>
+            <select class="filter-select" id="filter-status" onchange="renderUsersTable()">
+              <option value="">All Status</option>
+              <option>Active</option><option>Inactive</option>
+            </select>
+          </div>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr>
+              <th>Student</th><th>Phone</th><th>Class</th><th>Joined</th><th>Status</th><th>Actions</th>
+            </tr></thead>
+            <tbody id="users-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div><!-- /users -->
+
+    <!-- ────────── ANALYTICS ────────── -->
+    <div class="page" id="page-analytics">
+      <div class="section-header">
+        <div>
+          <div class="section-title">Analytics</div>
+          <div class="section-sub">Insights on user activity, video performance, and growth.</div>
+        </div>
+      </div>
+
+      <!-- Mini stats row -->
+      <div class="grid-3" style="margin-bottom:20px;">
+        <div class="mini-stat">
+          <div class="mini-stat-icon green" style="background:rgba(16,185,129,0.12);color:var(--accent)"><i class="fas fa-clock"></i></div>
+          <div>
+            <div class="mini-stat-val">1,240</div>
+            <div class="mini-stat-label">Watch Hours (this month)</div>
+          </div>
+        </div>
+        <div class="mini-stat">
+          <div class="mini-stat-icon blue" style="background:rgba(59,130,246,0.12);color:var(--info)"><i class="fas fa-mouse-pointer"></i></div>
+          <div>
+            <div class="mini-stat-val">68%</div>
+            <div class="mini-stat-label">Avg. Completion Rate</div>
+          </div>
+        </div>
+        <div class="mini-stat">
+          <div class="mini-stat-icon warn" style="background:rgba(245,158,11,0.12);color:var(--warn)"><i class="fas fa-fire"></i></div>
+          <div>
+            <div class="mini-stat-val">Class 3</div>
+            <div class="mini-stat-label">Most Viewed Class</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid-2" style="margin-bottom:20px;">
+        <div class="card">
+          <div class="card-header"><span class="card-title">Monthly Registrations</span></div>
+          <div class="card-body"><div class="chart-wrap"><canvas id="reg-chart"></canvas></div></div>
+        </div>
+        <div class="card">
+          <div class="card-header"><span class="card-title">Views Per Day (Last 7 Days)</span></div>
+          <div class="card-body"><div class="chart-wrap"><canvas id="daily-chart"></canvas></div></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header"><span class="card-title">Top Performing Videos</span></div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Rank</th><th>Title</th><th>Class</th><th>Views</th><th>Completion</th></tr></thead>
+            <tbody id="top-videos-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div><!-- /analytics -->
+
+    <!-- ────────── SETTINGS ────────── -->
+    <div class="page" id="page-settings">
+      <div class="section-header">
+        <div>
+          <div class="section-title">Settings</div>
+          <div class="section-sub">Customize the platform to your preferences.</div>
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-header"><span class="card-title">Appearance</span></div>
+          <div class="card-body">
+            <div class="settings-row">
+              <div>
+                <div class="settings-label">Dark Mode</div>
+                <div class="settings-desc">Switch between dark and light theme</div>
+              </div>
+              <label class="toggle">
+                <input type="checkbox" id="dark-toggle" checked onchange="toggleThemeFromSettings(this)">
+                <span class="toggle-slider"></span>
+              </label>
+            </div>
+            <div class="settings-row">
+              <div>
+                <div class="settings-label">Sidebar Collapsed</div>
+                <div class="settings-desc">Auto-collapse sidebar on small screens</div>
+              </div>
+              <label class="toggle">
+                <input type="checkbox" checked>
+                <span class="toggle-slider"></span>
+              </label>
+            </div>
+            <div class="settings-row">
+              <div>
+                <div class="settings-label">Compact Tables</div>
+                <div class="settings-desc">Reduce row height in tables</div>
+              </div>
+              <label class="toggle">
+                <input type="checkbox">
+                <span class="toggle-slider"></span>
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header"><span class="card-title">Notifications</span></div>
+          <div class="card-body">
+            <div class="settings-row">
+              <div>
+                <div class="settings-label">New Student Alert</div>
+                <div class="settings-desc">Notify when a new student registers</div>
+              </div>
+              <label class="toggle"><input type="checkbox" checked><span class="toggle-slider"></span></label>
+            </div>
+            <div class="settings-row">
+              <div>
+                <div class="settings-label">Video Milestone</div>
+                <div class="settings-desc">Alert at 100, 500, 1000 views</div>
+              </div>
+              <label class="toggle"><input type="checkbox" checked><span class="toggle-slider"></span></label>
+            </div>
+            <div class="settings-row">
+              <div>
+                <div class="settings-label">Weekly Report</div>
+                <div class="settings-desc">Receive weekly summary email</div>
+              </div>
+              <label class="toggle"><input type="checkbox"><span class="toggle-slider"></span></label>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header"><span class="card-title">Site Info</span></div>
+          <div class="card-body">
+            <div class="form-group">
+              <label class="form-label">Site Name</label>
+              <input class="form-input" value="Genius Coaching" />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Admin Email</label>
+              <input class="form-input" type="email" value="admin@geniuscoaching.in" />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Contact Phone</label>
+              <input class="form-input" type="tel" value="+91 8959161289" />
+            </div>
+            <button class="btn btn-primary" onclick="showToast('Settings saved!','success')">
+              <i class="fas fa-save"></i> Save Changes
+            </button>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header"><span class="card-title">Data Management</span></div>
+          <div class="card-body">
+            <div class="settings-row">
+              <div>
+                <div class="settings-label">Export All Videos</div>
+                <div class="settings-desc">Download all video data as CSV</div>
+              </div>
+              <button class="btn btn-outline btn-sm" onclick="exportData('videos')">
+                <i class="fas fa-download"></i> Export
+              </button>
+            </div>
+            <div class="settings-row">
+              <div>
+                <div class="settings-label">Export Students</div>
+                <div class="settings-desc">Download student list as CSV</div>
+              </div>
+              <button class="btn btn-outline btn-sm" onclick="exportData('students')">
+                <i class="fas fa-download"></i> Export
+              </button>
+            </div>
+            <div class="settings-row">
+              <div>
+                <div class="settings-label">Clear All Data</div>
+                <div class="settings-desc">Reset all local storage data</div>
+              </div>
+              <button class="btn btn-danger btn-sm" onclick="clearAllData()">
+                <i class="fas fa-trash"></i> Clear
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div><!-- /settings -->
+
+  </main><!-- /main -->
+
+  <!-- ────────── EDIT VIDEO MODAL ────────── -->
+  <div class="modal-overlay" id="edit-modal">
+    <div class="modal">
+      <div class="modal-header">
+        <span class="modal-title">Edit Video</span>
+        <button class="modal-close" onclick="closeModal('edit-modal')"><i class="fas fa-times"></i></button>
+      </div>
+      <div class="modal-body">
+        <input type="hidden" id="edit-id" />
+        <div class="form-group">
+          <label class="form-label">Title</label>
+          <input class="form-input" id="edit-title" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">YouTube URL</label>
+          <input class="form-input" id="edit-url" />
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Class</label>
+            <select class="form-select" id="edit-class">
+              <option>Class 1</option><option>Class 2</option><option>Class 3</option>
+              <option>Class 4</option><option>Class 5</option><option>Class 6</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Subject</label>
+            <select class="form-select" id="edit-subject">
+              <option>Mathematics</option><option>Science</option><option>English</option>
+              <option>History</option><option>Physics</option><option>Chemistry</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Description</label>
+          <textarea class="form-textarea" id="edit-desc"></textarea>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-outline" onclick="closeModal('edit-modal')">Cancel</button>
+        <button class="btn btn-primary" onclick="saveEdit()"><i class="fas fa-save"></i> Save</button>
+      </div>
+    </div>
   </div>
 
+  <!-- ────────── ADD USER MODAL ────────── -->
+  <div class="modal-overlay" id="add-user-modal">
+    <div class="modal">
+      <div class="modal-header">
+        <span class="modal-title">Add New Student</span>
+        <button class="modal-close" onclick="closeModal('add-user-modal')"><i class="fas fa-times"></i></button>
+      </div>
+      <div class="modal-body">
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Full Name <span class="required">*</span></label>
+            <input class="form-input" id="u-name" placeholder="John Doe" />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Phone <span class="required">*</span></label>
+            <input class="form-input" id="u-phone" placeholder="+91 9876543210" />
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Class</label>
+            <select class="form-select" id="u-class">
+              <option>Class 1</option><option>Class 2</option><option>Class 3</option>
+              <option>Class 4</option><option>Class 5</option><option>Class 6</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Status</label>
+            <select class="form-select" id="u-status">
+              <option>Active</option><option>Inactive</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Password <span class="required">*</span></label>
+          <input class="form-input" type="password" id="u-pass" placeholder="Set password" />
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-outline" onclick="closeModal('add-user-modal')">Cancel</button>
+        <button class="btn btn-primary" onclick="addUser()"><i class="fas fa-user-plus"></i> Add Student</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ────────── TOAST CONTAINER ────────── -->
+  <div id="toast-container"></div>
+
+  <!-- ════════════════════════════
+       JAVASCRIPT
+  ═════════════════════════════ -->
   <script>
-    // Check Admin
-    const currentUser = JSON.parse(localStorage.getItem('saraswati_user'));
-    if (!currentUser || currentUser.role !== 'admin') {
-      alert('Access Denied'); window.location.href = 'login.html';
+    /* ══ DATA ══ */
+    let videos  = JSON.parse(localStorage.getItem('gc_videos'))  || [];
+    let users   = JSON.parse(localStorage.getItem('gc_users'))   || [];
+    let activity = JSON.parse(localStorage.getItem('gc_activity')) || [];
+
+    /* ── Seed demo data if empty ── */
+    if (videos.length === 0) {
+      const seed = [
+        { id:1, title:'Class 1 – Introduction to Mathematics', url:'https://www.youtube.com/watch?v=dQw4w9WgXcQ', class:'Class 1', subject:'Mathematics', desc:'Overview of the course and key concepts.', views: 342, date: '2024-11-01' },
+        { id:2, title:'Class 2 – Number Systems',              url:'https://www.youtube.com/watch?v=dQw4w9WgXcQ', class:'Class 2', subject:'Mathematics', desc:'Natural numbers, integers, rational numbers.', views: 289, date: '2024-11-05' },
+        { id:3, title:'Class 3 – Algebra Basics',              url:'https://www.youtube.com/watch?v=dQw4w9WgXcQ', class:'Class 3', subject:'Mathematics', desc:'Variables, expressions, equations.', views: 410, date: '2024-11-10' },
+        { id:4, title:'Class 4 – Geometry Fundamentals',       url:'https://www.youtube.com/watch?v=dQw4w9WgXcQ', class:'Class 4', subject:'Mathematics', desc:'Shapes, angles, and theorems.', views: 198, date: '2024-11-14' },
+        { id:5, title:'Class 5 – Trigonometry',                url:'https://www.youtube.com/watch?v=dQw4w9WgXcQ', class:'Class 5', subject:'Mathematics', desc:'Sin, cos, tan and applications.', views: 267, date: '2024-11-20' },
+        { id:6, title:'Class 6 – Calculus Intro',              url:'https://www.youtube.com/watch?v=dQw4w9WgXcQ', class:'Class 6', subject:'Mathematics', desc:'Limits, derivatives introduction.', views: 155, date: '2024-11-28' },
+      ];
+      videos = seed;
+      saveVideos();
     }
 
-    // Data
-    let users = JSON.parse(localStorage.getItem('saraswati_users')) || [];
-    const prices = JSON.parse(localStorage.getItem('course_prices')) || { '9th': 999, '10th': 999, '11th': 1499, '12th': 1499 };
-    const videos = JSON.parse(localStorage.getItem('admin_videos')) || [];
-    const files = JSON.parse(localStorage.getItem('admin_files')) || [];
-    let loginLogs = JSON.parse(localStorage.getItem('login_logs')) || [];
-
-    // Tab System
-    function showTab(tab) {
-      document.getElementById('users-tab').classList.toggle('hidden', tab !== 'users');
-      document.getElementById('content-tab').classList.toggle('hidden', tab !== 'content');
-      document.getElementById('logs-tab').classList.toggle('hidden', tab !== 'logs');
-      if (tab === 'users') loadUsers();
-      if (tab === 'content') loadPrices();
-      if (tab === 'logs') loadLogs();
+    if (users.length === 0) {
+      const names = ['Aakash Sharma','Priya Verma','Rohit Gupta','Sneha Patel','Arjun Singh','Kavya Nair','Rahul Mishra','Anjali Tiwari'];
+      users = names.map((n,i) => ({
+        id: i+1, name: n,
+        phone: `+91 90${String(10+i).padStart(2,'0')}000${i}0`,
+        class: `Class ${(i%6)+1}`,
+        status: i % 5 === 0 ? 'Inactive' : 'Active',
+        joined: `2024-${String(10+(i%3)).padStart(2,'0')}-${String(1+(i*3)).padStart(2,'0')}`
+      }));
+      saveUsers();
     }
 
-    // USER MANAGEMENT
-    function loadUsers() {
-      const tbody = document.getElementById('users-table');
-      const search = document.getElementById('search-user').value.toLowerCase();
-      tbody.innerHTML = '';
+    if (activity.length === 0) {
+      activity = [
+        { text:'<strong>Aakash Sharma</strong> enrolled in Class 1', time:'2 min ago', color:'var(--accent)' },
+        { text:'New video <strong>"Algebra Basics"</strong> was added', time:'1 hour ago', color:'var(--info)' },
+        { text:'<strong>Priya Verma</strong> completed Class 2', time:'3 hours ago', color:'var(--purple)' },
+        { text:'<strong>5 new students</strong> registered today', time:'5 hours ago', color:'var(--warn)' },
+        { text:'Video <strong>"Trigonometry"</strong> hit 200 views', time:'Yesterday', color:'var(--accent)' },
+      ];
+    }
 
-      const filtered = users.filter(u => 
-        u.name?.toLowerCase().includes(search) || 
-        u.phone?.toLowerCase().includes(search)
+    function saveVideos() { localStorage.setItem('gc_videos', JSON.stringify(videos)); }
+    function saveUsers()  { localStorage.setItem('gc_users',  JSON.stringify(users));  }
+
+    /* ══ LOADER ══ */
+    window.addEventListener('load', () => {
+      setTimeout(() => {
+        document.getElementById('loader').classList.add('hide');
+        initDashboard();
+      }, 1600);
+    });
+
+    /* ══ NAVIGATION ══ */
+    const pageTitles = {
+      dashboard:   ['Dashboard',    '/ Overview'],
+      'add-content': ['Add Content', '/ Upload Video'],
+      manage:      ['Manage Content','/ All Videos'],
+      users:       ['Students',     '/ User Management'],
+      analytics:   ['Analytics',    '/ Insights'],
+      settings:    ['Settings',     '/ Preferences'],
+    };
+
+    function navigate(page, el) {
+      document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+      document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+      document.getElementById('page-' + page).classList.add('active');
+      if (el) el.classList.add('active');
+
+      const [t, s] = pageTitles[page] || ['Dashboard', ''];
+      document.getElementById('topbar-title').innerHTML = `${t} <span>${s}</span>`;
+
+      if (page === 'manage')    renderVideosTable();
+      if (page === 'users')     renderUsersTable();
+      if (page === 'analytics') initAnalyticsCharts();
+      if (page === 'dashboard') updateDashboardStats();
+
+      closeSidebar();
+    }
+
+    /* ══ SIDEBAR MOBILE ══ */
+    function toggleSidebar() {
+      document.getElementById('sidebar').classList.toggle('open');
+      document.getElementById('sidebar-overlay').classList.toggle('open');
+    }
+    function closeSidebar() {
+      document.getElementById('sidebar').classList.remove('open');
+      document.getElementById('sidebar-overlay').classList.remove('open');
+    }
+
+    /* ══ THEME ══ */
+    let isDark = true;
+    function toggleTheme() {
+      isDark = !isDark;
+      document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light');
+      document.getElementById('theme-icon').className = isDark ? 'fas fa-moon' : 'fas fa-sun';
+      const dt = document.getElementById('dark-toggle');
+      if (dt) dt.checked = isDark;
+      reinitCharts();
+    }
+    function toggleThemeFromSettings(el) {
+      isDark = el.checked;
+      document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light');
+      document.getElementById('theme-icon').className = isDark ? 'fas fa-moon' : 'fas fa-sun';
+      reinitCharts();
+    }
+
+    /* ══ INIT DASHBOARD ══ */
+    function initDashboard() {
+      updateDashboardStats();
+      initEnrollChart();
+      initViewsChart();
+      renderRecentVideos();
+      renderActivity();
+    }
+
+    /* ══ ANIMATED COUNTER ══ */
+    function animateCount(el, target) {
+      let current = 0;
+      const step = Math.ceil(target / 40);
+      const interval = setInterval(() => {
+        current = Math.min(current + step, target);
+        el.textContent = current.toLocaleString();
+        if (current >= target) clearInterval(interval);
+      }, 30);
+    }
+
+    function updateDashboardStats() {
+      animateCount(document.getElementById('stat-students'), users.length);
+      animateCount(document.getElementById('stat-videos'), videos.length);
+      const classes = [...new Set(videos.map(v => v.class))].length;
+      animateCount(document.getElementById('stat-classes'), classes);
+      const totalViews = videos.reduce((a, v) => a + (v.views || 0), 0);
+      animateCount(document.getElementById('stat-views'), totalViews);
+    }
+
+    /* ══ CHARTS ══ */
+    const chartInstances = {};
+
+    function chartColors() {
+      return isDark
+        ? { grid: 'rgba(255,255,255,0.05)', text: '#9aa3b8', bg: '#131720' }
+        : { grid: 'rgba(0,0,0,0.05)',       text: '#4b5563', bg: '#ffffff' };
+    }
+
+    function baseChartOpts(type = 'line') {
+      const c = chartColors();
+      return {
+        responsive: true, maintainAspectRatio: false,
+        plugins: { legend: { labels: { color: c.text, font: { family: 'DM Sans', size: 11 }, boxWidth: 10 } } },
+        scales: type !== 'doughnut' ? {
+          x: { grid: { color: c.grid }, ticks: { color: c.text, font: { family: 'DM Sans', size: 10 } } },
+          y: { grid: { color: c.grid }, ticks: { color: c.text, font: { family: 'DM Sans', size: 10 } } },
+        } : {},
+      };
+    }
+
+    function destroyChart(id) {
+      if (chartInstances[id]) { chartInstances[id].destroy(); delete chartInstances[id]; }
+    }
+
+    function initEnrollChart() {
+      destroyChart('enroll');
+      const ctx = document.getElementById('enroll-chart').getContext('2d');
+      chartInstances['enroll'] = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'],
+          datasets: [{
+            label: 'Enrollments',
+            data: [3,7,5,9,12,8,15],
+            borderColor: '#10b981',
+            backgroundColor: 'rgba(16,185,129,0.1)',
+            fill: true, tension: 0.4, pointRadius: 4,
+            pointBackgroundColor: '#10b981',
+          }]
+        },
+        options: baseChartOpts('line'),
+      });
+    }
+
+    function initViewsChart() {
+      destroyChart('views');
+      const ctx = document.getElementById('views-chart').getContext('2d');
+      const classCounts = {};
+      videos.forEach(v => { classCounts[v.class] = (classCounts[v.class]||0) + (v.views||0); });
+      chartInstances['views'] = new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: Object.keys(classCounts),
+          datasets: [{
+            label: 'Views',
+            data: Object.values(classCounts),
+            backgroundColor: ['#10b981','#3b82f6','#f59e0b','#8b5cf6','#ef4444','#06b6d4'],
+            borderRadius: 6,
+          }]
+        },
+        options: { ...baseChartOpts('bar'), plugins: { legend: { display: false } } },
+      });
+    }
+
+    function initAnalyticsCharts() {
+      destroyChart('reg');
+      const ctx1 = document.getElementById('reg-chart').getContext('2d');
+      chartInstances['reg'] = new Chart(ctx1, {
+        type: 'bar',
+        data: {
+          labels: ['Jun','Jul','Aug','Sep','Oct','Nov','Dec'],
+          datasets: [{
+            label: 'Registrations',
+            data: [12,19,7,24,32,18,28],
+            backgroundColor: 'rgba(59,130,246,0.7)',
+            borderRadius: 6,
+          }]
+        },
+        options: { ...baseChartOpts('bar'), plugins: { legend: { display: false } } },
+      });
+
+      destroyChart('daily');
+      const ctx2 = document.getElementById('daily-chart').getContext('2d');
+      chartInstances['daily'] = new Chart(ctx2, {
+        type: 'line',
+        data: {
+          labels: ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'],
+          datasets: [{
+            label: 'Views',
+            data: [120,95,180,210,160,240,195],
+            borderColor: '#f59e0b',
+            backgroundColor: 'rgba(245,158,11,0.1)',
+            fill: true, tension: 0.4, pointRadius: 4,
+            pointBackgroundColor: '#f59e0b',
+          }]
+        },
+        options: baseChartOpts('line'),
+      });
+
+      renderTopVideos();
+    }
+
+    function reinitCharts() {
+      const activePage = document.querySelector('.page.active')?.id;
+      if (activePage === 'page-dashboard') { initEnrollChart(); initViewsChart(); }
+      if (activePage === 'page-analytics') initAnalyticsCharts();
+    }
+
+    /* ══ RECENT VIDEOS (DASHBOARD) ══ */
+    function renderRecentVideos() {
+      const tbody = document.getElementById('recent-videos-tbody');
+      const recent = [...videos].slice(-5).reverse();
+      tbody.innerHTML = recent.map(v => `
+        <tr>
+          <td style="color:var(--text);font-weight:500;max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${v.title}</td>
+          <td><span class="badge badge-green">${v.class}</span></td>
+          <td style="color:var(--accent);font-weight:600;">${(v.views||0).toLocaleString()}</td>
+        </tr>
+      `).join('') || `<tr><td colspan="3" style="text-align:center;color:var(--text3);padding:20px;">No videos yet</td></tr>`;
+    }
+
+    function renderActivity() {
+      const feed = document.getElementById('activity-feed');
+      feed.innerHTML = activity.map(a => `
+        <div class="activity-item">
+          <div class="activity-dot" style="background:${a.color}"></div>
+          <div>
+            <div class="activity-text">${a.text}</div>
+            <div class="activity-time">${a.time}</div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    /* ══ ADD VIDEO ══ */
+    function addVideo() {
+      const title   = document.getElementById('v-title').value.trim();
+      const url     = document.getElementById('v-url').value.trim();
+      const cls     = document.getElementById('v-class').value;
+      const subject = document.getElementById('v-subject').value;
+      const desc    = document.getElementById('v-desc').value.trim();
+
+      if (!title) { showToast('Please enter a video title', 'error'); return; }
+      if (!url)   { showToast('Please enter a YouTube URL', 'error'); return; }
+      if (!cls)   { showToast('Please assign a class', 'error'); return; }
+
+      const newVid = {
+        id: Date.now(), title, url, class: cls, subject, desc,
+        views: 0, date: new Date().toISOString().split('T')[0]
+      };
+      videos.push(newVid);
+      saveVideos();
+
+      activity.unshift({ text: `New video <strong>"${title}"</strong> added to ${cls}`, time: 'Just now', color: 'var(--info)' });
+
+      // Clear form
+      ['v-title','v-url','v-desc'].forEach(id => document.getElementById(id).value = '');
+      document.getElementById('v-class').value = '';
+      document.getElementById('video-preview').innerHTML = `
+        <div style="text-align:center;">
+          <i class="fas fa-play-circle" style="font-size:2rem;margin-bottom:8px;display:block;color:var(--text3);"></i>
+          Enter a YouTube URL to preview
+        </div>`;
+
+      updateDashboardStats();
+      showToast(`Video "${title}" added successfully!`, 'success');
+    }
+
+    /* ══ PREVIEW VIDEO ══ */
+    function previewVideo() {
+      const url = document.getElementById('v-url').value.trim();
+      const id  = extractYTId(url);
+      const preview = document.getElementById('video-preview');
+      if (!id) { showToast('Invalid YouTube URL', 'error'); return; }
+      preview.innerHTML = `<iframe src="https://www.youtube.com/embed/${id}" style="width:100%;height:100%;border:none;" allowfullscreen></iframe>`;
+    }
+
+    function extractYTId(url) {
+      const m = url.match(/(?:v=|youtu\.be\/|embed\/)([a-zA-Z0-9_-]{11})/);
+      return m ? m[1] : null;
+    }
+
+    /* ══ VIDEOS TABLE ══ */
+    function renderVideosTable() {
+      const q  = (document.getElementById('search-videos')?.value || '').toLowerCase();
+      const fc = document.getElementById('filter-class')?.value || '';
+      const fs = document.getElementById('filter-subject')?.value || '';
+
+      let filtered = videos.filter(v =>
+        (!q  || v.title.toLowerCase().includes(q)) &&
+        (!fc || v.class === fc) &&
+        (!fs || v.subject === fs)
       );
 
-      if (filtered.length === 0) {
-        document.getElementById('no-users').classList.remove('hidden');
-        return;
-      }
-      document.getElementById('no-users').classList.add('hidden');
+      const badge = document.getElementById('video-count-badge');
+      if (badge) badge.textContent = `${filtered.length} video${filtered.length!==1?'s':''}`;
 
-      filtered.forEach((user, i) => {
-        const row = document.createElement('tr');
-        row.className = i % 2 === 0 ? 'bg-gray-50' : '';
-        row.innerHTML = `
-          <td class="p-3">${user.name || '-'}</td>
-          <td class="p-3 font-mono text-sm">${user.phone}</td>
-          <td class="p-3"><span class="px-2 py-1 rounded text-xs ${user.role === 'admin' ? 'bg-red-100 text-red-700' : 'bg-emerald-light text-emerald'}">${user.role}</span></td>
-          <td class="p-3 flex gap-2">
-            <button onclick="editUser('${user.phone}')" class="text-blue-600 hover:underline text-sm">Edit</button>
-            <button onclick="deleteUser('${user.phone}')" class="text-red-600 hover:underline text-sm">Delete</button>
+      const tbody = document.getElementById('videos-tbody');
+      tbody.innerHTML = filtered.map((v, i) => `
+        <tr>
+          <td style="color:var(--text3);font-size:.78rem;">${i+1}</td>
+          <td>
+            <div style="font-weight:500;color:var(--text);max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${v.title}</div>
+            <div style="font-size:.72rem;color:var(--text3);margin-top:2px;">${v.desc?.slice(0,50) || '—'}</div>
           </td>
-        `;
-        tbody.appendChild(row);
-      });
+          <td><span class="badge badge-green">${v.class}</span></td>
+          <td><span class="badge badge-blue">${v.subject||'—'}</span></td>
+          <td style="font-weight:600;color:var(--accent);">${(v.views||0).toLocaleString()}</td>
+          <td style="color:var(--text3);font-size:.78rem;">${v.date||'—'}</td>
+          <td>
+            <div class="td-actions">
+              <button class="btn btn-warn btn-icon btn-sm" title="Edit" onclick="openEditModal(${v.id})">
+                <i class="fas fa-edit"></i>
+              </button>
+              <button class="btn btn-danger btn-icon btn-sm" title="Delete" onclick="deleteVideo(${v.id})">
+                <i class="fas fa-trash"></i>
+              </button>
+            </div>
+          </td>
+        </tr>
+      `).join('') || `<tr><td colspan="7" style="text-align:center;color:var(--text3);padding:28px;">No videos found</td></tr>`;
     }
 
-    function showCreateUser() {
-      document.getElementById('create-modal').classList.remove('hidden');
+    function openEditModal(id) {
+      const v = videos.find(v => v.id === id);
+      if (!v) return;
+      document.getElementById('edit-id').value = id;
+      document.getElementById('edit-title').value = v.title;
+      document.getElementById('edit-url').value   = v.url;
+      document.getElementById('edit-class').value   = v.class;
+      document.getElementById('edit-subject').value = v.subject || 'Mathematics';
+      document.getElementById('edit-desc').value   = v.desc || '';
+      document.getElementById('edit-modal').classList.add('open');
     }
 
-    function closeModal() {
-      document.getElementById('create-modal').classList.add('hidden');
+    function saveEdit() {
+      const id = parseInt(document.getElementById('edit-id').value);
+      const v  = videos.find(v => v.id === id);
+      if (!v) return;
+      v.title   = document.getElementById('edit-title').value.trim();
+      v.url     = document.getElementById('edit-url').value.trim();
+      v.class   = document.getElementById('edit-class').value;
+      v.subject = document.getElementById('edit-subject').value;
+      v.desc    = document.getElementById('edit-desc').value.trim();
+      saveVideos();
+      closeModal('edit-modal');
+      renderVideosTable();
+      renderRecentVideos();
+      showToast('Video updated successfully', 'success');
     }
 
-    function createUser() {
-      const name = document.getElementById('new-name').value.trim();
-      const phone = document.getElementById('new-phone').value.trim();
-      const password = document.getElementById('new-pass').value;
-      const role = document.getElementById('new-role').value;
+    function deleteVideo(id) {
+      if (!confirm('Delete this video?')) return;
+      videos = videos.filter(v => v.id !== id);
+      saveVideos();
+      renderVideosTable();
+      updateDashboardStats();
+      showToast('Video deleted', 'info');
+    }
 
-      if (!name || !phone || !password) {
-        showAlert('Fill all fields');
-        return;
+    /* ══ USERS TABLE ══ */
+    const avatarColors = ['#10b981','#3b82f6','#f59e0b','#8b5cf6','#ef4444','#06b6d4','#ec4899','#14b8a6'];
+
+    function renderUsersTable() {
+      const q  = (document.getElementById('search-users')?.value || '').toLowerCase();
+      const fs = document.getElementById('filter-status')?.value || '';
+
+      let filtered = users.filter(u =>
+        (!q  || u.name.toLowerCase().includes(q) || u.phone.includes(q)) &&
+        (!fs || u.status === fs)
+      );
+
+      const badge = document.getElementById('user-count-badge');
+      if (badge) badge.textContent = `${filtered.length} student${filtered.length!==1?'s':''}`;
+
+      const tbody = document.getElementById('users-tbody');
+      tbody.innerHTML = filtered.map((u, i) => `
+        <tr>
+          <td>
+            <div class="user-cell">
+              <div class="user-avatar" style="background:${avatarColors[i % avatarColors.length]}">${u.name.charAt(0)}</div>
+              <div>
+                <div class="user-name">${u.name}</div>
+              </div>
+            </div>
+          </td>
+          <td style="font-size:.8rem;">${u.phone}</td>
+          <td><span class="badge badge-purple">${u.class}</span></td>
+          <td style="color:var(--text3);font-size:.78rem;">${u.joined||'—'}</td>
+          <td><span class="badge ${u.status==='Active'?'badge-green':'badge-danger'}">${u.status}</span></td>
+          <td>
+            <div class="td-actions">
+              <button class="btn btn-outline btn-icon btn-sm" title="View" onclick="showToast('Feature coming soon','info')">
+                <i class="fas fa-eye"></i>
+              </button>
+              <button class="btn btn-danger btn-icon btn-sm" title="Delete" onclick="deleteUser(${u.id})">
+                <i class="fas fa-trash"></i>
+              </button>
+            </div>
+          </td>
+        </tr>
+      `).join('') || `<tr><td colspan="6" style="text-align:center;color:var(--text3);padding:28px;">No students found</td></tr>`;
+    }
+
+    function openAddUserModal() { document.getElementById('add-user-modal').classList.add('open'); }
+
+    function addUser() {
+      const name  = document.getElementById('u-name').value.trim();
+      const phone = document.getElementById('u-phone').value.trim();
+      const cls   = document.getElementById('u-class').value;
+      const status= document.getElementById('u-status').value;
+      const pass  = document.getElementById('u-pass').value;
+      if (!name||!phone||!pass) { showToast('Fill all required fields','error'); return; }
+      users.push({ id: Date.now(), name, phone, class: cls, status, joined: new Date().toISOString().split('T')[0] });
+      saveUsers();
+      closeModal('add-user-modal');
+      renderUsersTable();
+      updateDashboardStats();
+      activity.unshift({ text:`<strong>${name}</strong> was added as a student`, time:'Just now', color:'var(--accent)' });
+      renderActivity();
+      document.getElementById('new-users-badge').textContent = parseInt(document.getElementById('new-users-badge').textContent||'0')+1;
+      showToast(`Student "${name}" added!`, 'success');
+    }
+
+    function deleteUser(id) {
+      if (!confirm('Remove this student?')) return;
+      users = users.filter(u => u.id !== id);
+      saveUsers();
+      renderUsersTable();
+      updateDashboardStats();
+      showToast('Student removed', 'info');
+    }
+
+    /* ══ TOP VIDEOS ══ */
+    function renderTopVideos() {
+      const sorted = [...videos].sort((a,b) => (b.views||0)-(a.views||0)).slice(0,5);
+      const tbody = document.getElementById('top-videos-tbody');
+      if (!tbody) return;
+      const medals = ['🥇','🥈','🥉','4','5'];
+      tbody.innerHTML = sorted.map((v,i) => `
+        <tr>
+          <td style="font-size:1rem;">${medals[i]}</td>
+          <td style="font-weight:500;color:var(--text);">${v.title}</td>
+          <td><span class="badge badge-green">${v.class}</span></td>
+          <td style="color:var(--accent);font-weight:700;">${(v.views||0).toLocaleString()}</td>
+          <td>
+            <div style="display:flex;align-items:center;gap:8px;">
+              <div style="flex:1;height:5px;background:var(--surface3);border-radius:999px;overflow:hidden;">
+                <div style="width:${Math.min(100,Math.round(((v.views||0)/500)*100))}%;height:100%;background:var(--accent);border-radius:999px;"></div>
+              </div>
+              <span style="font-size:.74rem;color:var(--text3);">${Math.min(100,Math.round(((v.views||0)/500)*100))}%</span>
+            </div>
+          </td>
+        </tr>
+      `).join('') || `<tr><td colspan="5" style="text-align:center;color:var(--text3);padding:20px;">No data</td></tr>`;
+    }
+
+    /* ══ MODAL ══ */
+    function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+    window.addEventListener('click', e => {
+      if (e.target.classList.contains('modal-overlay')) e.target.classList.remove('open');
+    });
+
+    /* ══ TOAST ══ */
+    function showToast(msg, type = 'success') {
+      const icons = { success:'fas fa-check-circle', error:'fas fa-exclamation-circle', info:'fas fa-info-circle' };
+      const container = document.getElementById('toast-container');
+      const toast = document.createElement('div');
+      toast.className = `toast ${type}`;
+      toast.innerHTML = `<i class="${icons[type]||icons.info} toast-icon"></i><span>${msg}</span>`;
+      container.appendChild(toast);
+      setTimeout(() => {
+        toast.style.animation = 'toastOut 0.3s ease forwards';
+        setTimeout(() => toast.remove(), 300);
+      }, 3000);
+    }
+
+    /* ══ EXPORT ══ */
+    function exportData(type) {
+      let csv = '';
+      if (type === 'videos') {
+        csv = 'Title,Class,Subject,Views,Date\n' + videos.map(v => `"${v.title}","${v.class}","${v.subject||''}",${v.views||0},"${v.date||''}"`).join('\n');
+        downloadCSV(csv, 'videos.csv');
+      } else {
+        csv = 'Name,Phone,Class,Status,Joined\n' + users.map(u => `"${u.name}","${u.phone}","${u.class}","${u.status}","${u.joined||''}"`).join('\n');
+        downloadCSV(csv, 'students.csv');
       }
-
-      if (users.find(u => u.phone === phone)) {
-        showAlert('Phone already registered');
-        return;
-      }
-
-      users.push({ name, phone, password, role });
-      localStorage.setItem('saraswati_users', JSON.stringify(users));
-      closeModal();
-      loadUsers();
-      showAlert('User Created!');
-    }
-
-    function editUser(phone) {
-      const user = users.find(u => u.phone === phone);
-      const newName = prompt('Edit Name:', user.name);
-      const newPass = prompt('New Password (leave blank to keep):', '');
-      if (newName !== null) user.name = newName;
-      if (newPass) user.password = newPass;
-      localStorage.setItem('saraswati_users', JSON.stringify(users));
-      loadUsers();
-      showAlert('User Updated!');
-    }
-
-    function deleteUser(phone) {
-      if (confirm(`Delete user "${phone}"?`)) {
-        users = users.filter(u => u.phone !== phone);
-        localStorage.setItem('saraswati_users', JSON.stringify(users));
-        loadUsers();
-        showAlert('User Deleted!');
-      }
-    }
-
-    // LOGIN LOGS
-    function loadLogs() {
-      const tbody = document.getElementById('logs-table');
-      const search = document.getElementById('search-log').value.toLowerCase();
-      tbody.innerHTML = '';
-
-      const filtered = loginLogs.filter(log => log.phone.includes(search));
-
-      if (filtered.length === 0) {
-        document.getElementById('no-logs').classList.remove('hidden');
-        return;
-      }
-      document.getElementById('no-logs').classList.add('hidden');
-
-      filtered.forEach((log, i) => {
-        const row = document.createElement('tr');
-        row.className = i % 2 === 0 ? 'bg-gray-50' : '';
-        row.innerHTML = `
-          <td class="p-3 font-mono text-sm">${log.phone}</td>
-          <td class="p-3">${log.name || '-'}</td>
-          <td class="p-3"><span class="px-2 py-1 rounded text-xs ${log.role === 'admin' ? 'bg-red-100 text-red-700' : 'bg-emerald-light text-emerald'}">${log.role}</span></td>
-          <td class="p-3 text-xs">${new Date(log.timestamp).toLocaleString()}</td>
-        `;
-        tbody.appendChild(row);
-      });
-    }
-
-    function exportLogs() {
-      let csv = 'Phone,Name,Role,Timestamp\n';
-      loginLogs.forEach(l => csv += `${l.phone},${l.name || ''},${l.role},${new Date(l.timestamp).toLocaleString()}\n`);
-      downloadCSV(csv, 'login_logs.csv');
-    }
-
-    function clearLogs() {
-      if (confirm('Clear all login logs?')) {
-        loginLogs = [];
-        localStorage.setItem('login_logs', JSON.stringify(loginLogs));
-        loadLogs();
-        showAlert('Logs Cleared!');
-      }
+      showToast(`${type === 'videos' ? 'Videos' : 'Students'} exported!`, 'success');
     }
 
     function downloadCSV(csv, filename) {
-      const blob = new Blob([csv], { type: 'text/csv' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = filename;
+      const a = Object.assign(document.createElement('a'), {
+        href: URL.createObjectURL(new Blob([csv], {type:'text/csv'})), download: filename
+      });
       a.click();
     }
 
-    // Search
-    document.getElementById('search-user').oninput = loadUsers;
-    document.getElementById('search-log').oninput = loadLogs;
-
-    // CONTENT (Prices, Videos, Files)
-    function loadPrices() {
-      const container = document.getElementById('prices-container');
-      container.innerHTML = '';
-      Object.keys(prices).forEach(cls => {
-        container.innerHTML += `
-          <div class="flex gap-2 items-center">
-            <span class="flex-1 font-medium">Class ${cls.toUpperCase()}:</span>
-            <input type="number" id="price-${cls}" value="${prices[cls]}" class="w-24 p-2 border rounded">
-          </div>`;
-      });
+    function clearAllData() {
+      if (!confirm('This will delete ALL videos, students, and activity data. Continue?')) return;
+      localStorage.removeItem('gc_videos'); localStorage.removeItem('gc_users'); localStorage.removeItem('gc_activity');
+      videos = []; users = []; activity = [];
+      updateDashboardStats(); renderRecentVideos(); renderActivity();
+      showToast('All data cleared', 'info');
     }
-
-    function savePrices() {
-      Object.keys(prices).forEach(cls => {
-        prices[cls] = parseInt(document.getElementById(`price-${cls}`).value);
-      });
-      localStorage.setItem('course_prices', JSON.stringify(prices));
-      showAlert('Prices Saved!');
-    }
-
-    function addVideo() {
-      const title = document.getElementById('video-title').value.trim();
-      const url = document.getElementById('video-url').value.trim();
-      const cls = document.getElementById('video-class').value;
-      if (title && url) {
-        videos.push({ title, url, class: cls });
-        localStorage.setItem('admin_videos', JSON.stringify(videos));
-        showAlert('Video Added!');
-        document.getElementById('video-title').value = '';
-        document.getElementById('video-url').value = '';
-      }
-    }
-
-    function addFile() {
-      const title = document.getElementById('file-title').value.trim();
-      const url = document.getElementById('file-url').value.trim();
-      const type = document.getElementById('file-type').value;
-      if (title && url) {
-        files.push({ title, url, type });
-        localStorage.setItem('admin_files', JSON.stringify(files));
-        showAlert(`${type} Uploaded!`);
-        document.getElementById('file-title').value = '';
-        document.getElementById('file-url').value = '';
-      }
-    }
-
-    function showAlert(msg) {
-      const alert = document.getElementById('admin-alert');
-      alert.textContent = msg;
-      alert.classList.remove('hidden');
-      setTimeout(() => alert.classList.add('hidden'), 3000);
-    }
-
-    function logout() {
-      localStorage.removeItem('saraswati_user');
-      window.location.href = 'login.html';
-    }
-
-    // Init
-    showTab('users');
   </script>
 </body>
 </html>
