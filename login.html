@@ -96,10 +96,18 @@
       const password = document.getElementById('login-password').value;
       const user = users.find(u => u.phone === phone && u.password === password);
       if (user) {
+        // Save logged-in user
         localStorage.setItem('saraswati_user', JSON.stringify(user));
+
+        // Log login activity
+        const logEntry = { phone: user.phone, name: user.name, role: user.role, timestamp: Date.now() };
+        let logs = JSON.parse(localStorage.getItem('login_logs')) || [];
+        logs.push(logEntry);
+        localStorage.setItem('login_logs', JSON.stringify(logs));
+
         showAlert('Login Successful!', 'success');
         setTimeout(() => {
-          window.location.href = user.role === 'admin' ? 'admin.html' : 'index.html';
+          window.location.href = user.role === 'admin' ? 'admin-dashboard.html' : 'index.html';
         }, 1000);
       } else {
         showAlert('Invalid credentials');
@@ -121,25 +129,6 @@
       toggleLink.click();
     };
   </script>
-  <script>
-    if (user) {
-  // LOG LOGIN ACTIVITY
-  const logEntry = {
-    phone: user.phone,
-    name: user.name,
-    role: user.role,
-    timestamp: Date.now()
-  };
-  let logs = JSON.parse(localStorage.getItem('login_logs')) || [];
-  logs.push(logEntry);
-  localStorage.setItem('login_logs', JSON.stringify(logs));
 
-  localStorage.setItem('saraswati_user', JSON.stringify(user));
-  showAlert('Login Successful!', 'success');
-  setTimeout(() => {
-    window.location.href = user.role === 'admin' ? 'admin.html' : 'index.html';
-  }, 1000)
-}
-  </script>
 </body>
 </html>
