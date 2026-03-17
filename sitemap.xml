@@ -3,11 +3,13 @@
 
   <url>
     <loc>https://geniuscoching-classes-55b022.netlify.app/</loc>
+    <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
 
   <url>
-    
+    <loc>https://geniuscoching-classes-55b022.netlify.app/courses-videos.html</loc>
+    <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
 
