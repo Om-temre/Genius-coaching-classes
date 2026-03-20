@@ -3,23 +3,44 @@
 
   <url>
     <loc>https://geniuschoching-clasess-55b022.netlify.app/</loc>
-    <lastmod>2026-03-19</lastmod>
-    <changefreq>daily</changefreq>
+    <lastmod>2026-03-20</lastmod>
+    <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
 
   <url>
+    <loc>https://geniuschoching-clasess-55b022.netlify.app/login.html</loc>
+    <lastmod>2026-03-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://geniuschoching-clasess-55b022.netlify.app/login-2.html</loc>
+    <lastmod>2026-03-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
     <loc>https://geniuschoching-clasess-55b022.netlify.app/courses-videos.html</loc>
-    <lastmod>2026-03-19</lastmod>
+    <lastmod>2026-03-20</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
 
   <url>
-    <loc>https://geniuschoching-clasess-55b022.netlify.app/login.html</loc>
-    <lastmod>2026-03-19</lastmod>
+    <loc>https://geniuschoching-clasess-55b022.netlify.app/trst.html</loc>
+    <lastmod>2026-03-20</lastmod>
     <changefreq>monthly</changefreq>
-    <priority>0.5</priority>
+    <priority>0.7</priority>
+  </url>
+
+  <url>
+    <loc>https://geniuschoching-clasess-55b022.netlify.app/admin-dashboard.html</loc>
+    <lastmod>2026-03-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
   </url>
 
 </urlset>
